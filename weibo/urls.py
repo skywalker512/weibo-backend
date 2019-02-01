@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from weiboapp.api import link_list, article_detail, article_list, tag_list, article_list_tag
+from weiboapp.api import link_list, article_detail, article_list, tag_list, article_list_tag, user_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/article/<int:post>', article_detail),
     path('api/article/list/<int:page>', article_list),
     path('api/article/tag/<int:tag>/<int:page>', article_list_tag),
+    path('api/user/<int:user_id>', user_detail),
 ]
