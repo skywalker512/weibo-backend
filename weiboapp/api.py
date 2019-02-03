@@ -36,6 +36,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(serializers.ModelSerializer):
     owner = UserProfileSerializer(many=False, read_only=True)
+    add_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 
     class Meta:
         model = Article
@@ -50,10 +51,13 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 @api_view(['GET'])
-def link_list(requst):
+def setting_list(requst):
     link_list = Link.objects.all()
-    serializer = LinkSerializer(link_list, many=True)
-    return Response(serializer.data)
+    LinkSerializerStr = LinkSerializer(link_list, many=True)
+    tag_list = Tag.objects.all()
+    TagSerializerStr = TagSerializer(tag_list, many=True)
+    serializer = {'link': LinkSerializerStr.data, 'tag': TagSerializerStr.data}
+    return Response(serializer)
 
 
 @api_view(['GET'])
@@ -76,13 +80,6 @@ def article_list(request, page):
 def user_detail(request, user_id):
     user_detail = UserProfile.objects.filter(id=user_id)
     serializer = UserProfileDetaiSerializer(user_detail, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def tag_list(request):
-    tag_list = Tag.objects.all()
-    serializer = TagSerializer(tag_list, many=True)
     return Response(serializer.data)
 
 
