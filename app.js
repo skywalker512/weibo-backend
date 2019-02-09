@@ -1,12 +1,14 @@
 import Koa from 'koa';
 // import views from 'koa-views';
-import json from 'koa-json';
-import onerror from 'koa-onerror';
-import bodyparser from 'koa-bodyparser';
-import logger from 'koa-logger';
+import json from 'koa-json'; // 用于 美化 json
+import onerror from 'koa-onerror'; // 用于在 访问出错时 返回 html 页面
+import bodyparser from 'koa-bodyparser'; // koa-bodyparser中间件可以把koa2上下文的formData数据解析到ctx.request.body
+import logger from 'koa-logger'; // 用于在 控制台 显示相应
 
+// 路由
 import frontendRouter from './routes/index';
 
+// 中间件
 import response from './middlewares/response'
 
 const app = new Koa()
@@ -19,13 +21,14 @@ app.use(bodyparser({
 }))
 app.use(json())
 app.use(logger())
-app.use(require('koa-static')(__dirname + '/public'))
+// app.use(require('koa-static')(__dirname + '/public'))
 
 // app.use(views(__dirname + '/views', {
 //   extension: 'ejs'
 // }))
 
 // logger
+// 这里的 时间应该是 从控件渲染 json 所花费的时间，但是与 logger 计算的时间不同
 app.use(async (ctx, next) => {
   const start = new Date()
   await next()
@@ -38,7 +41,7 @@ app.use(response); // 这里如果使用 () 则需要 response 函数返回一�
 app.use(frontendRouter.routes());
 app.use(frontendRouter.allowedMethods());
 
-// error-handling
+// error-handling 在控制台中抛出 log
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
