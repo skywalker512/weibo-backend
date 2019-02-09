@@ -1,14 +1,15 @@
-const Koa = require('koa')
+import Koa from 'koa';
+import views from 'koa-views';
+import json from 'koa-json';
+import onerror from 'koa-onerror';
+import bodyparser from 'koa-bodyparser';
+import logger from 'koa-logger';
+
+import frontendRouter from './routes/index';
+
+import response from './middlewares/response'
+
 const app = new Koa()
-const views = require('koa-views')
-const json = require('koa-json')
-const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
-const logger = require('koa-logger')
-
-const index = require('./routes/index')
-const users = require('./routes/users')
-
 // error handler
 onerror(app)
 
@@ -33,12 +34,13 @@ app.use(async (ctx, next) => {
 })
 
 // routes
-app.use(index.routes(), index.allowedMethods())
-app.use(users.routes(), users.allowedMethods())
+app.use(response); // 这里如果使用 () 则需要 response 函数返回一个函数，use 接收的就是一个函数
+app.use(frontendRouter.routes());
+app.use(frontendRouter.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
 
-module.exports = app
+export default app
