@@ -6,7 +6,7 @@ import bodyparser from 'koa-bodyparser'; // koa-bodyparser中间件可以把koa2
 import logger from 'koa-logger'; // 用于在 控制台 显示相应
 
 // 路由
-import frontendRouter from './routes/index';
+import { indexRouter, frontendRouter} from './routes/index';
 
 // 中间件
 import response from './middlewares/response'
@@ -38,6 +38,8 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(response); // 这里如果使用 () 则需要 response 函数返回一个函数，use 接收的就是一个函数
+app.use(indexRouter.routes());
+app.use(indexRouter.allowedMethods());
 app.use(frontendRouter.routes());
 app.use(frontendRouter.allowedMethods());
 
