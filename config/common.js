@@ -1,6 +1,6 @@
 export default {
     development: {
-        monogo: {
+        mongo: {
             uri: 'mongodb://localhost:27017/weibotest' // uri? 统一资源标识符
         }
     }

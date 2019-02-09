@@ -1,22 +1,22 @@
 import mongoose from 'mongoose';
 import config from '../config/common';
 
-const dbConfig = config[process.env.NODE_ENV || 'development']; // 环境配置
+const dbConfig = config.development; // 环境配置
 
-mongoose.connect(dbConfig.monogo.uri);
+mongoose.connect(dbConfig.mongo.uri, { useNewUrlParser: true });
 
 
 // 连接成功 
-mongoose.connection.on('connected', function () {
+mongoose.connection.on('connected', () => {
     console.log('Mongoose connection open to ' + dbConfig.mongo.uri);
 });
 
 // 连接失败
-mongoose.connection.on('error', function (err) {
+mongoose.connection.on('error', (err) => {
     console.log('Mongoose connection error: ' + err);
 });
 
 // 断开连接
-mongoose.connection.on('disconnected', function () {
+mongoose.connection.on('disconnected', () => {
     console.log('Mongoose connection disconnected');
 });
