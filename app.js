@@ -11,6 +11,9 @@ import { indexRouter, frontendRouter } from './routes/index';
 // 中间件
 import response from './middlewares/response'
 
+// 连接数据库
+import './models/db'
+
 const app = new Koa()
 // error handler
 onerror(app)
