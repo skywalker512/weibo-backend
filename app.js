@@ -9,21 +9,21 @@ import logger from 'koa-logger'; // 用于在 控制台 显示相应
 import { indexRouter, frontendRouter } from './routes/index';
 
 // 中间件
-import response from './middlewares/response'
+import response from './middlewares/response';
 
 // 连接数据库
-import './models/db'
+import './models/db';
 
-const app = new Koa()
+const app = new Koa();
 // error handler
-onerror(app)
+onerror(app);
 
 // middlewares
 app.use(bodyparser({
     enableTypes: ['json', 'form', 'text']
-}))
-app.use(json())
-app.use(logger())
+}));
+app.use(json());
+app.use(logger());
 // app.use(require('koa-static')(__dirname + '/public'))
 
 // app.use(views(__dirname + '/views', {
@@ -33,10 +33,10 @@ app.use(logger())
 // logger
 // 这里的 时间应该是 从控件渲染 json 所花费的时间，但是与 logger 计算的时间不同
 app.use(async (ctx, next) => {
-    const start = new Date()
-    await next()
-    const ms = new Date() - start
-    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+    const start = new Date();
+    await next();
+    const ms = new Date() - start;
+    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 })
 
 // routes
@@ -48,7 +48,7 @@ app.use(frontendRouter.allowedMethods());
 
 // error-handling 在控制台中抛出 log
 app.on('error', (err, ctx) => {
-    console.error('server error', err, ctx)
+    console.error('server error', err, ctx);
 });
 
-export default app
+export default app;

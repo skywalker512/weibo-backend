@@ -8,7 +8,7 @@ export default async (ctx, next) => {
         ctx.status = status || 400; // 400 Bad Request 客户端错误
         ctx.body = { code: -200, msg, data, error };
     }
-
+    
     ctx.success = ({ data, msg }) => {
         ctx.body = { code: 200, msg, data };
     }
