@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import views from 'koa-views';
+// import views from 'koa-views';
 import json from 'koa-json';
 import onerror from 'koa-onerror';
 import bodyparser from 'koa-bodyparser';
@@ -21,9 +21,9 @@ app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
 
-app.use(views(__dirname + '/views', {
-  extension: 'ejs'
-}))
+// app.use(views(__dirname + '/views', {
+//   extension: 'ejs'
+// }))
 
 // logger
 app.use(async (ctx, next) => {
