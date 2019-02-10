@@ -31,11 +31,11 @@ class ArticleController {
     // 修改文章
     static async changeArticle(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
-        // 在修改的时候必须要注意 _id
-        let data = ctx.request.body;
+
+        const data = ctx.request.body;
         if (!data) return ctx.error({ msg: '数据发送失败' });
-        const _id = data._id;
-        delete data._id;
+
+        const _id = ctx.params._id;
         const article = await ArticleModel.findById(_id);
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
@@ -50,7 +50,7 @@ class ArticleController {
     static async deleteArticle(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         // 在修改的时候必须要注意 _id
-        const { _id } = ctx.request.body;
+        const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
         const article = await ArticleModel.findById(_id);
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
@@ -72,24 +72,24 @@ class ArticleController {
     }
 
     // 获取文章详情、评论、(点赞)
-    static async getDetail(ctx) {
-        const id = ctx.query.id;
-        let { pageSize, currentPage } = ctx.query;
+    static async getArticleDetail(ctx) {
+        const _id = ctx.params._id;
+        let { per_page, page } = ctx.query;
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
-        const article = await ArticleModel.findById(id).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const article = await ArticleModel.findById(_id).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         const review = article.review + 1;
         await ArticleModel.findByIdAndUpdate(article._id, { $set: { review } }); // $set: 只会修改其中的一项 而不是全部改变
 
 
-        if (!currentPage) currentPage = 1;
-        if (!pageSize) pageSize = 10;
-        const skip = (currentPage - 1) * pageSize; // 第一页 从 0 开始
+        if (!page) page = 1;
+        if (!per_page) per_page = 10;
+        const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
-        const comments = await CommentModel.find({ articleId: article._id }).sort({ createdAt: '-1' }).skip(skip).limit(pageSize);
+        const comments = await CommentModel.find({ articleId: article._id }).sort({ createdAt: '-1' }).skip(skip).limit(per_page);
 
         return ctx.success({ data: { article, comments } });
     }
