@@ -18,6 +18,9 @@ const user = {
     passwordPattern: /^.*(?=.{4,16})(?=.*\d)(?=.*[A-Z]{2,})(?=.*[a-z]{2,}).*$/,
 
     emailPattern: /^.*(?=.{1,30})(?=.*[@]).*$/,
+
+    gavatar: 'https://cdn.v2ex.com/gravatar/',
+    gavaterOption: '?d=retro&s=64',
 }
 
 export { config, user }

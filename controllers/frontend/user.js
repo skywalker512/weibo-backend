@@ -17,8 +17,8 @@ class UserController {
 
         const isExit = await UserModel.findOne({ email });
         if (isExit) return ctx.error({ msg: '邮箱已存在' });
-
-        const result = await UserModel.create({ email, name, password: md5(password) });
+        const avatar = userConfig.gavatar + md5(email) + userConfig.gavaterOption;
+        const result = await UserModel.create({ email, name, password: md5(password), avatar });
         if (!result) {
             return ctx.error({ msg: '注册失败' });
         } else {
