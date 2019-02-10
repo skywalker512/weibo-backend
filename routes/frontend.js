@@ -13,5 +13,6 @@ router
     .post('/login', UserController.login)
     .post('/register', UserController.register)
     .get('/logout', UserController.logout)
+    .get('/getUser', UserController.getUser)
 
 export default router; // 简洁写法

@@ -22,7 +22,7 @@ class UserController {
         if (!result) {
             return ctx.error({ msg: '注册失败', code: 60002 });
         } else {
-            ctx.setCookies(md5(result._id));
+            ctx.setCookies(result._id);
             return ctx.success({ msg: '注册成功' });
         }
     }
@@ -46,7 +46,7 @@ class UserController {
         }
         if (!result) return ctx.error({ msg: '登陆信息错误', code: 40006 });
         // 种下 Cookies
-        ctx.setCookies(md5(result._id));
+        ctx.setCookies(result._id);
         // 这里在登陆的时候就传回数据，以减少请求
         ctx.success({ msg: '登录成功', data: result });
     }
@@ -60,7 +60,11 @@ class UserController {
     }
 
     static async getUser(ctx) {
-        
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆', code: 40006 });
+
+        const result = await UserModel.findOne({ email: ctx.session.email  }, { password: 0 });
+        if (!result) return ctx.error({ msg: '未知问题', code: 50001 });
+        ctx.success({ msg: '查询成功', data: result });
     }
 }
 

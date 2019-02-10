@@ -1,5 +1,6 @@
 import ArticleModel from '../../models/article/article';
 import CategoryModel from '../../models/article/catagory'
+import md5 from 'md5'
 
 // const CommentModel = mongoose.model('Comment');
 
@@ -34,7 +35,7 @@ class ArticleController {
     static async getCategory(ctx) {
         const data = await CategoryModel.find();
         // if( !data.length ) return ctx.error({ msg: '暂无数据', code: '60001'});
-        if ( ctx.isAuthenticated() ) return ctx.error({ msg: '暂无数据', code: 60001 });
+        if ( ctx.isAuthenticated() ) return ctx.error({ msg: { a: ctx.session.userId, b: md5('weibo' + ctx.session.userId) }, code: 60001 });
         return ctx.success({ data });
     }
 }

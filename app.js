@@ -5,6 +5,7 @@ import onerror from 'koa-onerror'; // 用于在 访问出错时 返回 html 页�
 import bodyparser from 'koa-bodyparser'; // koa-bodyparser中间件可以把koa2上下文的formData数据解析到ctx.request.body
 import logger from 'koa-logger'; // 用于在 控制台 显示相应
 import session from 'koa-session';
+import Redis from 'koa-redis'
 
 // 路由
 import { indexRouter, frontendRouter } from './routes/index';
@@ -29,12 +30,13 @@ app.use(logger());
 // app.use(require('koa-static')(__dirname + '/public'))
 app.keys = ['weibo:secret'];
 const CONFIG = {
-  key: 'weibo', 
-  maxAge: 604800000,  // 7天
-  overwrite: true, 
-  signed: true, 
+    key: 'weibo',
+    maxAge: 604800000,  // 7天
+    overwrite: true,
+    signed: true,
+    store: new Redis(),
 };
-app.use(session(CONFIG,app));
+app.use(session(CONFIG, app));
 
 // app.use(views(__dirname + '/views', {
 //   extension: 'ejs'
