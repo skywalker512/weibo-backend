@@ -11,7 +11,7 @@ export default async (ctx, next) => {
 
     ctx.setCookies = ( userId ) => {
         ctx.session.userId = userId;
-        const keep_user = 604800000; // 7天
+        const keep_user = 604800000;  // 7天   0 为浏览器进程
         ctx.cookies.set('userid', md5('weibo' + userId), { maxAge: keep_user, httpOnly: false });
     }
 

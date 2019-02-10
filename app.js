@@ -31,9 +31,10 @@ app.use(logger());
 app.keys = ['weibo:secret'];
 const CONFIG = {
     key: 'weibo',
-    maxAge: 604800000,  // 7天
+    maxAge: 604800000,  // 7天   0 为浏览器进程
     overwrite: true,
     signed: true,
+    // session 默认保存在 用户端 使用 Redis 保存在服务器端 以防泄露
     store: new Redis(),
 };
 app.use(session(CONFIG, app));
