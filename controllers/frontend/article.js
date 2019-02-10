@@ -5,17 +5,17 @@ import CommentModel from '../../models/article/comment';
 // 这里使用 类的静态方法来创建，在内存上的使用应该和使用对象或者实例化是相同的只是写起来明了一些
 class ArticleController {
     // 发布文章
-    static async publish(ctx) {
+    static async publishArticle(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆'  });
 
         const data = ctx.request.body;
         if (!data) return ctx.error({ msg: '数据发送失败'  });
 
-        const isExit = await ArticleModel.findOne({ title: data.title });
-        if (isExit) return ctx.error({ msg: '标题已存在'  });
+        // const isExit = await ArticleModel.findOne({ title: data.title });
+        // if (isExit) return ctx.error({ msg: '标题已存在'  });
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
-        data.author = ctx.session.userId;
+        data.authorId = ctx.session.userId;
         // praise: { num: Number, user: Array },
         data.praise = { num: 0, user: [] };
 
@@ -23,9 +23,29 @@ class ArticleController {
         // const result = await temp.save()
         const result = await ArticleModel.create(data);
         if (!result) return ctx.error({ msg: '文章创建失败'  });
-
+        // 更新 分类，用于 热门节点
+        await CategoryModel.findByIdAndUpdate(data.categoryId, { $set: { lastPublishAt: Date.now() } });
         return ctx.success({ msg: '发表成功', data: result });
     }
+
+    // 修改文章
+    static async changeArticle(ctx) {
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆'  });
+        // 在修改的时候必须要注意 _id
+        let data = ctx.request.body;        
+        if (!data) return ctx.error({ msg: '数据发送失败'  });
+        const _id = data._id;
+        delete data._id;
+        const article = await ArticleModel.findById(_id);
+        if(!article) return ctx.error({msg: '获取详情数据失败!' });
+
+        if( !(article.authorId === ctx.session.userId || ctx.isAdmin()) ) return ctx.error({msg: '你没有权限' });
+        data.updatedAt = Date.now();
+        const result = await ArticleModel.findByIdAndUpdate(_id, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
+        if (!result) return ctx.error({ msg: '文章修改失败'  });
+        return ctx.success({ msg: '修改成功', data: result });
+    }
+
 
     // 获取分类信息
     static async getCategory(ctx) {
@@ -43,7 +63,7 @@ class ArticleController {
         if(!article) return ctx.error({msg: '获取详情数据失败!' });
 
         const review = article.review + 1;
-        await ArticleModel.findByIdAndUpdate(article._id, { $set: {review} });
+        await ArticleModel.findByIdAndUpdate(article._id, { $set: {review} }); // $set: 只会修改其中的一项 而不是全部改变
 
         
         if(!currentPage) currentPage = 1;

@@ -9,7 +9,8 @@ router
         ctx.body = 'api is ok'
     })
     .get('/article/getCategory', ArticleController.getCategory)
-    .post('/article/publish', ArticleController.publish)
+    .post('/article/publishArticle', ArticleController.publishArticle)
+    .put('/article/changeArticle', ArticleController.changeArticle)
     .get('/article/getDetail', ArticleController.getDetail)
 
     // 用户相关
