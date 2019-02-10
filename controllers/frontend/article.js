@@ -71,6 +71,21 @@ class ArticleController {
         return ctx.success({ data });
     }
 
+    // 获取分类下的文章列表
+    static async getCategoryArticle(ctx) {
+        const _id = ctx.params._id;
+
+        let { per_page, page } = ctx.query;
+        if (!page) page = 1;
+        if (!per_page) per_page = 10;
+        const skip = (page - 1) * per_page; // 第一页 从 0 开始
+
+        const articles = await ArticleModel.find({ categoryId: _id }).sort({ createdAt: '-1' }).skip(skip).limit(per_page);;
+        if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
+
+        return ctx.success({ data: articles });
+    }
+
     // 获取文章详情、评论、(点赞)
     static async getArticleDetail(ctx) {
         const _id = ctx.params._id;
