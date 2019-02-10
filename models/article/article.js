@@ -10,6 +10,7 @@ const ArticleSchema = new Schema({
     review: { type: Number, default: 0 },
     praise: { num: Number, user: Array }, // 这里应该要考虑性能问题，不使用数据库查询总个数而是直接统计
     content: { type: String, required: true },
+    commentNum: { type: Number, default: 0 },
     comments: [{ type: Schema.Types.ObjectId, ref:'Comment' }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
