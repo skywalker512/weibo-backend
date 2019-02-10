@@ -22,7 +22,7 @@ class UserController {
         if (!result) {
             return ctx.error({ msg: '注册失败', code: 60002 });
         } else {
-            ctx.setCookies(result._id);
+            ctx.setCookies( result._id, result.group );
             return ctx.success({ msg: '注册成功' });
         }
     }
@@ -46,7 +46,7 @@ class UserController {
         }
         if (!result) return ctx.error({ msg: '登陆信息错误', code: 40006 });
         // 种下 Cookies
-        ctx.setCookies(result._id);
+        ctx.setCookies(result._id, result.group);
         // 这里在登陆的时候就传回数据，以减少请求
         ctx.success({ msg: '登录成功', data: result });
     }
