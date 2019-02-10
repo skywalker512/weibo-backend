@@ -10,6 +10,9 @@ router
     })
     .get('/article/getCategory', ArticleController.getCategory)
     .post('/article/publish', ArticleController.publish)
+    .get('/article/getDetail', ArticleController.getDetail)
+
+    // 用户相关
     .post('/login', UserController.login)
     .post('/register', UserController.register)
     .get('/logout', UserController.logout)
