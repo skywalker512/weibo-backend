@@ -6,13 +6,13 @@ import CommentModel from '../../models/article/comment';
 class ArticleController {
     // 发布文章
     static async publish(ctx) {
-        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆', code: 40006 });
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆'  });
 
         const data = ctx.request.body;
-        if (!data) return ctx.error({ msg: '数据发送失败', code: 40002 });
+        if (!data) return ctx.error({ msg: '数据发送失败'  });
 
         const isExit = await ArticleModel.findOne({ title: data.title });
-        if (isExit) return ctx.error({ msg: '标题已存在', code: 40003 });
+        if (isExit) return ctx.error({ msg: '标题已存在'  });
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.author = ctx.session.userId;
@@ -22,7 +22,7 @@ class ArticleController {
         // const temp = new ArticleModel(data)
         // const result = await temp.save()
         const result = await ArticleModel.create(data);
-        if (!result) return ctx.error({ msg: '文章创建失败', code: 40004 });
+        if (!result) return ctx.error({ msg: '文章创建失败'  });
 
         return ctx.success({ msg: '发表成功', data: result });
     }
@@ -30,7 +30,7 @@ class ArticleController {
     // 获取分类信息
     static async getCategory(ctx) {
         const data = await CategoryModel.find();
-        if (!data.length) return ctx.error({ msg: '暂无数据', code: 60001 });
+        if (!data.length) return ctx.error({ msg: '暂无数据'  });
         return ctx.success({ data });
     }
 
@@ -40,7 +40,7 @@ class ArticleController {
         let { pageSize, currentPage } = ctx.query;
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         const article = await ArticleModel.findById(id).populate('author', { password: 0 }).populate('comments');
-        if(!article) return ctx.error({msg: '获取详情数据失败!', code: 60005});
+        if(!article) return ctx.error({msg: '获取详情数据失败!' });
 
         const review = article.review + 1;
         await ArticleModel.findByIdAndUpdate(article._id, { $set: {review} });
