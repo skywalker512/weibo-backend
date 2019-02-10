@@ -4,9 +4,9 @@ export default async (ctx, next) => {
     // ---> 进来
 
     // ctx.error 函数将接收的参数包含 data msg status error 对象
-    ctx.error = ({ data, msg, status, error }) => {
+    ctx.error = ({ data, msg, status, error, code }) => {
         ctx.status = status || 400; // 400 Bad Request 客户端错误
-        ctx.body = { code: -200, msg, data, error };
+        ctx.body = { code: code || 400, msg, data, error };
     }
     
     ctx.success = ({ data, msg }) => {
