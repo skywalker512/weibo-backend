@@ -8,15 +8,15 @@ class ArticleController {
     // 发布文章
     static async publish(ctx) {
         const user = ctx.session.user;
-        if(!user) return ctx.error({ msg: '您还没有登陆', code: '40001' });
+        if(!user) return ctx.error({ msg: '您还没有登陆', code: 40001 });
         
         // const _id = user._id;
         const { _id } = user;
 
         const data = ctx.request.body;
-        if(!data) return ctx.error({ msg: '数据发送失败', code: '40002' });
+        if(!data) return ctx.error({ msg: '数据发送失败', code: 40002 });
         const isExit = await ArticleModel.findOne({ title: data.title });
-        if(isExit) return ctx.error({ msg: '标题已存在', code: '40003' });
+        if(isExit) return ctx.error({ msg: '标题已存在', code: 40003 });
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.author = _id;
@@ -26,14 +26,15 @@ class ArticleController {
         // const temp = new ArticleModel(data)
         // const result = await temp.save()
         const result = await ArticleModel.create(data);
-        if(!result) return ctx.error({ msg: '文章创建失败', code: '40004' });
+        if(!result) return ctx.error({ msg: '文章创建失败', code: 40004 });
 
         return ctx.success({ msg: '发表成功', data: result });
     }
 
     static async getCategory(ctx) {
         const data = await CategoryModel.find();
-        if( data.length === 0 ) return ctx.error({ msg: '暂无数据', code: '60001'});
+        // if( !data.length ) return ctx.error({ msg: '暂无数据', code: '60001'});
+        if ( ctx.isAuthenticated() ) return ctx.error({ msg: '暂无数据', code: 60001 });
         return ctx.success({ data });
     }
 }

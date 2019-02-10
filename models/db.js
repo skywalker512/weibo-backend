@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import config from '../config/common';
+import { config } from '../config/common';
 
 const dbConfig = config.development; // 环境配置
 
