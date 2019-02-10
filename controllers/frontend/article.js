@@ -47,24 +47,22 @@ class ArticleController {
     }
 
     // 删除文章
-
-    static async changeArticle(ctx) {
+    static async deleteArticle(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         // 在修改的时候必须要注意 _id
-        let data = ctx.request.body;
-        if (!data) return ctx.error({ msg: '数据发送失败' });
-        const _id = data._id;
-        delete data._id;
+        const { _id } = ctx.request.body;
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
         const article = await ArticleModel.findById(_id);
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
-        data.updatedAt = Date.now();
-        const result = await ArticleModel.findByIdAndUpdate(_id, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
-        if (!result) return ctx.error({ msg: '文章修改失败' });
-        return ctx.success({ msg: '修改成功', data: result });
-    }
+        const result1 = await CommentModel.deleteMany({ articleId: _id });
+        const result2 = await ArticleModel.findByIdAndDelete(_id);
+        if( !result2 ) return ctx.error({ msg: '文章删除失败' });
+        if( !result1 ) return ctx.error({ msg: '评论删除失败' });
 
+        return ctx.success({ msg: '删除成功' });
+    }
 
     // 获取分类信息
     static async getCategory(ctx) {
