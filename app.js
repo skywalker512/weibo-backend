@@ -8,7 +8,7 @@ import session from 'koa-session';
 import Redis from 'koa-redis'
 
 // 路由
-import { indexRouter, frontendRouter } from './routes/index';
+import { indexRouter, frontendRouter, backendRouter } from './routes/index';
 
 // 中间件
 import response from './middlewares/response';
@@ -59,6 +59,8 @@ app.use(indexRouter.routes());
 app.use(indexRouter.allowedMethods());
 app.use(frontendRouter.routes());
 app.use(frontendRouter.allowedMethods());
+app.use(backendRouter.routes());
+app.use(backendRouter.allowedMethods());
 
 // error-handling 在控制台中抛出 log
 app.on('error', (err, ctx) => {
