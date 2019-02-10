@@ -11,6 +11,7 @@ import { indexRouter, frontendRouter } from './routes/index';
 
 // 中间件
 import response from './middlewares/response';
+import passport from './middlewares/passport';
 
 // 连接数据库
 import './models/db';
@@ -50,6 +51,7 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(response); // 这里如果使用 () 则需要 response 函数返回一个函数，use 接收的就是一个函数
+app.use(passport);
 app.use(indexRouter.routes());
 app.use(indexRouter.allowedMethods());
 app.use(frontendRouter.routes());
