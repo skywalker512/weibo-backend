@@ -39,7 +39,7 @@ class ArticleController {
         const id = ctx.query.id;
         let { pageSize, currentPage } = ctx.query;
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
-        const article = await ArticleModel.findById(id).populate('author', { password: 0 }).populate('comments');
+        const article = await ArticleModel.findById(id).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if(!article) return ctx.error({msg: '获取详情数据失败!' });
 
         const review = article.review + 1;
@@ -54,7 +54,7 @@ class ArticleController {
         // createdAt: { type: Date, default: Date.now },
         const comments = await CommentModel.find({ articleId: article._id }).sort({ createdAt: '-1' }).skip(skip).limit(pageSize);
 
-        return ctx.success({ data: { data, comments } });
+        return ctx.success({ data: { article, comments } });
     }
 
 }
