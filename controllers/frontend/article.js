@@ -64,6 +64,19 @@ class ArticleController {
         return ctx.success({ msg: '删除成功' });
     }
 
+    // 获取文章列表
+    static async getArticle(ctx) {
+        let { per_page, page } = ctx.query;
+        if (!page) page = 1;
+        if (!per_page) per_page = 10;
+        const skip = (page - 1) * per_page; // 第一页 从 0 开始
+
+        const articles = await ArticleModel.find().sort({ createdAt: '-1' }).skip(skip).limit(per_page);;
+        if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
+
+        return ctx.success({ data: articles });
+    }
+
     // 获取分类信息
     static async getCategory(ctx) {
         const data = await CategoryModel.find();
