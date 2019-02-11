@@ -9,6 +9,7 @@ const ArticleSchema = new Schema({
     categoryId: { type: Schema.Types.ObjectId, required: true, ref: 'Catagory' }, // ref: 'Catagory' ?? 在使用 populate 的时候必须使用 ref
     cover: { type: String, default: null },
     authorId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    changedBy: { type: Schema.Types.ObjectId, default: null, ref: 'User' },
     review: { type: Number, default: 0 },
     praise: { num: Number, user: Array }, // 这里应该要考虑性能问题，不使用数据库查询总个数而是直接统计
     content: { type: String, required: true },
@@ -19,11 +20,20 @@ const ArticleSchema = new Schema({
     lastCommentAt: { type: Date, default: Date.now }, // 最热话题
 })
 
+ArticleSchema.pre('validate', async function(next) {
+    const res1 = await CategoryModel.findOne({ _id: this.categoryId });
+    if( !res1 ) {
+        throw new Error('你发布的文章没有相应的节点');
+    } else {
+        next();
+    }
+})
+
 ArticleSchema.post('findOneAndRemove', async function(doc) {
     await CommentModel.deleteMany({ articleId: doc._id });
 });
 
-ArticleSchema.post('save', async function(doc) {
+ArticleSchema.post('findOneAndUpdate', async function(doc) {
     await CategoryModel.findOneAndUpdate({ _id: doc.categoryId }, { $set: { lastPublishAt: Date.now() } });
     doc.updatedAt = Date.now();
     await doc.save();
