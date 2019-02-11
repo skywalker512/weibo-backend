@@ -56,7 +56,7 @@ class ArticleController {
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
         
-        const result = await ArticleModel.findByIdAndDelete(_id);
+        const result = await ArticleModel.findOneAndRemove({ _id });
         if( !result ) return ctx.error({ msg: '文章删除失败' });
 
         return ctx.success({ msg: '删除成功' });
