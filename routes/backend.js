@@ -9,5 +9,6 @@ router
         ctx.body = 'backend api is ok'
     })
     .post('/category', ArticleController.createCategory)
+    .put('/category/:_id', ArticleController.changeCategory)
 
 export default router; // 简洁写法
