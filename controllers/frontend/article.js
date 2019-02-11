@@ -32,11 +32,11 @@ class ArticleController {
         const data = ctx.request.body;
         if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
 
-        const article = await ArticleModel.findById(_id);
+        const article = await ArticleModel.findOne({_id});
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
-        const result = await ArticleModel.findByIdAndUpdate(_id, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
+        const result = await ArticleModel.findOneAndUpdate({_id}, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
         if (!result) return ctx.error({ msg: '文章修改失败' });
         return ctx.success({ msg: '修改成功', data: result });
     }
@@ -48,7 +48,7 @@ class ArticleController {
         const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
 
-        const article = await ArticleModel.findById(_id);
+        const article = await ArticleModel.findOne({_id});
         if (!article) return ctx.error({ msg: '已被删除' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
@@ -102,11 +102,11 @@ class ArticleController {
 
         let { per_page, page } = ctx.query;
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
-        const article = await ArticleModel.findById(_id).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const article = await ArticleModel.findOne({_id}).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         const review = article.review + 1;
-        await ArticleModel.findByIdAndUpdate(article._id, { $set: { review } }); // $set: 只会修改其中的一项 而不是全部改变
+        await ArticleModel.findOneAndUpdate({ _id: article._id}, { $set: { review } }); // $set: 只会修改其中的一项 而不是全部改变
 
 
         if (!page) page = 1;

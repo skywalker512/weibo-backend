@@ -62,7 +62,7 @@ class UserController {
     static async getUser(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
-        const result = await UserModel.findById( ctx.session.userId, { password: 0 } )
+        const result = await UserModel.findOne( {_id: ctx.session.userId}, { password: 0 } )
         if (!result) return ctx.error({ msg: '未知问题' });
         ctx.success({ msg: '查询成功', data: result });
     }

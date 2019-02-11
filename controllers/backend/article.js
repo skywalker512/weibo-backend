@@ -28,10 +28,10 @@ class ArticleController {
         const { name } = ctx.request.body;
         if (!name) return ctx.error({ msg: '数据发送失败' });
 
-        const category = await CategoryModel.findById(_id);
+        const category = await CategoryModel.findOne({_id});
         if (!category) return ctx.error({ msg: '获取详情数据失败!' });
 
-        const result = await CategoryModel.findByIdAndUpdate(_id, { $set: { name } }, { new: true }); // { new: true } 修改了之后返回新的文章
+        const result = await CategoryModel.findOneAndUpdate({_id}, { $set: { name } }, { new: true }); // { new: true } 修改了之后返回新的文章
         if (!result) return ctx.error({ msg: '分类修改失败' });
         return ctx.success({ msg: '修改成功', data: result });
     }
@@ -44,7 +44,7 @@ class ArticleController {
         const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
 
-        const category = await CategoryModel.findById(_id);
+        const category = await CategoryModel.findOne({_id});
         if (!category) return ctx.error({ msg: '已被删除' });
         
         if (!result) return ctx.error({ msg: '分类修改失败' });
