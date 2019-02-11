@@ -11,8 +11,8 @@ class ArticleController {
         const data = ctx.request.body;
         if (!data) return ctx.error({ msg: '数据发送失败' });
 
-        // const isExit = await ArticleModel.findOne({ title: data.title });
-        // if (isExit) return ctx.error({ msg: '标题已存在'  });
+        const isExit = await ArticleModel.findOne({ title: data.title });
+        if (isExit) return ctx.error({ msg: '标题已存在'  });
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.authorId = ctx.session.userId;
@@ -53,7 +53,7 @@ class ArticleController {
         const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
         const article = await ArticleModel.findById(_id);
-        if (!article) return ctx.error({ msg: '获取详情数据失败!' });
+        if (!article) return ctx.error({ msg: '已被删除' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
         const result1 = await CommentModel.deleteMany({ articleId: _id });

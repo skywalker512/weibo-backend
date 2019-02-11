@@ -2,12 +2,12 @@ import Router from 'koa-router';
 
 import { ArticleController } from '../controllers/backend'
 
-const router = new Router({ prefix: '/api/backend' });
+const router = new Router({ prefix: '/api' });
 
 router
-    .get('/', async (ctx) => {
+    .get('/backend', async (ctx) => {
         ctx.body = 'backend api is ok'
     })
-    .post('/createCategory', ArticleController.createCategory)
+    .post('/category', ArticleController.createCategory)
 
 export default router; // 简洁写法

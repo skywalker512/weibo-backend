@@ -14,7 +14,6 @@ router
 
     .get('/category', ArticleController.getCategory) // 获取分类列表
     .get('/category/:_id', ArticleController.getCategoryArticle) // 特定的分类下的文章列表列表
-
     .get('/article', ArticleController.getArticle) // 获取文章列表
     .post('/article', ArticleController.publishArticle) // 发布文章
     .get('/article/:_id', ArticleController.getArticleDetail) // 获取某个文章的详细信息
