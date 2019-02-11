@@ -9,7 +9,7 @@ class ArticleController {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length === 2)) return ctx.error({ msg: '数据发送失败' });
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.authorId = ctx.session.userId;
@@ -36,6 +36,7 @@ class ArticleController {
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
+        data.changedBy = ctx.session.userId;
         const result = await ArticleModel.findOneAndUpdate({_id}, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
         if (!result) return ctx.error({ msg: '文章修改失败' });
         return ctx.success({ msg: '修改成功', data: result });
