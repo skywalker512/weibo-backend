@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { ArticleController, UserController, CommentController } from '../controllers/frontend'
+import { ArticleController, UserController, CommentController, IndexController } from '../controllers/frontend'
 
 const router = new Router({ prefix: '/api' });
 
@@ -11,6 +11,7 @@ router
             '获取分类列表': '/category{/_id}'
         }
     })
+    .get('/index', IndexController.getIndex)
 
     // 不包含 _id 的有 get(列表) post(新的)
     // 包含的有 get(详情) put(修改) delete(删除)

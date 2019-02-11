@@ -13,8 +13,6 @@ class ArticleController {
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.authorId = ctx.session.userId;
-        // praise: { num: Number, user: Array },
-        data.praise = { num: 0, user: [] };
 
         // const temp = new ArticleModel(data)
         // const result = await temp.save()

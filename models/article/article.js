@@ -11,7 +11,8 @@ const ArticleSchema = new Schema({
     authorId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
     changedBy: { type: Schema.Types.ObjectId, default: null, ref: 'User' },
     review: { type: Number, default: 0 },
-    praise: { num: Number, user: Array }, // 这里应该要考虑性能问题，不使用数据库查询总个数而是直接统计
+    praiseNum: { type: Number, default: 0 }, // 这里应该要考虑性能问题，不使用数据库查询总个数而是直接统计
+    praise: [{ type: Schema.Types.ObjectId, ref:'User' }],
     content: { type: String, required: true },
     commentNum: { type: Number, default: 0 },
     // comments: [{ type: Schema.Types.ObjectId, ref:'Comment' }], 为了删除方便 使用 我属于谁的 方式
