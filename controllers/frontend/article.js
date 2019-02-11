@@ -9,7 +9,7 @@ class ArticleController {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
         const data = ctx.request.body;
-        if (!data) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length === 4)) return ctx.error({ msg: '数据发送失败' });
 
         const isExit = await ArticleModel.findOne({ title: data.title });
         if (isExit) return ctx.error({ msg: '标题已存在'  });
@@ -32,10 +32,11 @@ class ArticleController {
     static async changeArticle(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
-        const data = ctx.request.body;
-        if (!data) return ctx.error({ msg: '数据发送失败' });
-
         const _id = ctx.params._id;
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
+        const data = ctx.request.body;
+        if (!(Object.keys(data).length === 4)) return ctx.error({ msg: '数据发送失败' });
+
         const article = await ArticleModel.findById(_id);
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
@@ -52,6 +53,7 @@ class ArticleController {
         // 在修改的时候必须要注意 _id
         const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
+
         const article = await ArticleModel.findById(_id);
         if (!article) return ctx.error({ msg: '已被删除' });
 
@@ -71,7 +73,7 @@ class ArticleController {
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
-        const articles = await ArticleModel.find().sort({ createdAt: '-1' }).skip(skip).limit(per_page);;
+        const articles = await ArticleModel.find().sort({ createdAt: '-1' }).skip(skip).limit(per_page).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
         return ctx.success({ data: articles });
@@ -87,6 +89,7 @@ class ArticleController {
     // 获取分类下的文章列表
     static async getCategoryArticle(ctx) {
         const _id = ctx.params._id;
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
 
         let { per_page, page } = ctx.query;
         if (!page) page = 1;
@@ -102,6 +105,8 @@ class ArticleController {
     // 获取文章详情、评论、(点赞)
     static async getArticleDetail(ctx) {
         const _id = ctx.params._id;
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
+
         let { per_page, page } = ctx.query;
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         const article = await ArticleModel.findById(_id).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
