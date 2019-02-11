@@ -9,10 +9,7 @@ class ArticleController {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 4)) return ctx.error({ msg: '数据发送失败' });
-
-        const isExit = await ArticleModel.findOne({ title: data.title });
-        if (isExit) return ctx.error({ msg: '标题已存在'  });
+        if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.authorId = ctx.session.userId;
@@ -35,7 +32,7 @@ class ArticleController {
         const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 4)) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
 
         const article = await ArticleModel.findById(_id);
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
@@ -58,10 +55,9 @@ class ArticleController {
         if (!article) return ctx.error({ msg: '已被删除' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
-        const result1 = await CommentModel.deleteMany({ articleId: _id });
-        const result2 = await ArticleModel.findByIdAndDelete(_id);
-        if( !result2 ) return ctx.error({ msg: '文章删除失败' });
-        if( !result1 ) return ctx.error({ msg: '评论删除失败' });
+        
+        const result = await ArticleModel.findByIdAndDelete(_id);
+        if( !result ) return ctx.error({ msg: '文章删除失败' });
 
         return ctx.success({ msg: '删除成功' });
     }
