@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import CommentModel from './comment';
+import CategoryModel from './catagory';
 
 const Schema = mongoose.Schema;
 
@@ -21,5 +22,11 @@ const ArticleSchema = new Schema({
 ArticleSchema.post('findOneAndRemove', async function(doc) {
     await CommentModel.deleteMany({ articleId: doc._id });
 });
+
+ArticleSchema.post('save', async function(doc) {
+    await CategoryModel.findOneAndUpdate({ _id: doc.categoryId }, { $set: { lastPublishAt: Date.now() } });
+    doc.updatedAt = Date.now();
+    await doc.save();
+})
 
 export default mongoose.model('Article', ArticleSchema);

@@ -20,8 +20,6 @@ class ArticleController {
         // const result = await temp.save()
         const result = await ArticleModel.create(data);
         if (!result) return ctx.error({ msg: '文章创建失败' });
-        // 更新 分类，用于 热门节点
-        await CategoryModel.findByIdAndUpdate(data.categoryId, { $set: { lastPublishAt: Date.now() } });
         return ctx.success({ msg: '发表成功', data: result });
     }
 
@@ -38,7 +36,6 @@ class ArticleController {
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
-        data.updatedAt = Date.now();
         const result = await ArticleModel.findByIdAndUpdate(_id, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
         if (!result) return ctx.error({ msg: '文章修改失败' });
         return ctx.success({ msg: '修改成功', data: result });
