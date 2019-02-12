@@ -1,6 +1,7 @@
 import ArticleModel from '../../models/article/article';
 import CategoryModel from '../../models/article/catagory';
 import CommentModel from '../../models/article/comment';
+import UserModel from '../../models/user/user'
 
 // 这里使用 类的静态方法来创建，在内存上的使用应该和使用对象或者实例化是相同的只是写起来明了一些
 class ArticleController {
@@ -16,7 +17,9 @@ class ArticleController {
 
         // const temp = new ArticleModel(data)
         // const result = await temp.save()
-        const result = await ArticleModel.create(data);
+        let result = await ArticleModel.create(data);
+        const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
+        result.authorId = user
         if (!result) return ctx.error({ msg: '文章创建失败' });
         return ctx.success({ msg: '发表成功', data: result });
     }
