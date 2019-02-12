@@ -65,7 +65,7 @@ class ArticleController {
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
-        const articles = await ArticleModel.find().sort({ createdAt: '-1' }).skip(skip).limit(per_page).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(per_page).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
         return ctx.success({ data: articles });
@@ -87,8 +87,7 @@ class ArticleController {
         if (!page) page = 1;
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
-
-        const articles = await ArticleModel.find({ categoryId: _id }).sort({ createdAt: '-1' }).skip(skip).limit(per_page);;
+        const articles = await ArticleModel.find({ categoryId: _id }).sort({ updatedAt: '-1' }).skip(skip).limit(per_page).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
         return ctx.success({ data: articles });
@@ -114,7 +113,7 @@ class ArticleController {
 
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
-        const comments = await CommentModel.find({ articleId: article._id }).sort({ createdAt: '-1' }).skip(skip).limit(per_page);
+        const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(per_page);
 
         return ctx.success({ data: { article, comments } });
     }
