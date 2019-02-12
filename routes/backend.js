@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { ArticleController } from '../controllers/backend'
+import { ArticleController, SettingController } from '../controllers/backend'
 
 const router = new Router({ prefix: '/api' });
 
@@ -10,5 +10,7 @@ router
     })
     .post('/category', ArticleController.createCategory)
     .put('/category/:_id', ArticleController.changeCategory)
+
+    .post('/link', SettingController.createLink)
 
 export default router; // 简洁写法

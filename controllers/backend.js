@@ -1,3 +1,4 @@
 import ArticleController from './backend/article';
+import SettingController from './backend/setting'
 
-export { ArticleController };
+export { ArticleController, SettingController };
