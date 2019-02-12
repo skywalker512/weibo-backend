@@ -31,12 +31,12 @@ class ArticleController {
         const _id = ctx.params._id;
         if (!_id) return ctx.error({ msg: '数据发送失败' });
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length === 2)) return ctx.error({ msg: '数据发送失败' });
 
         const article = await ArticleModel.findOne({_id});
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
-
-        if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
+        console.log(article.authorId, ctx.session.userId)
+        if (!(String(article.authorId) === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
         data.changedBy = ctx.session.userId;
         const result = await ArticleModel.findOneAndUpdate({_id}, { $set: data }, { new: true }); // { new: true } 修改了之后返回新的文章
         if (!result) return ctx.error({ msg: '文章修改失败' });
@@ -53,7 +53,7 @@ class ArticleController {
         const article = await ArticleModel.findOne({_id});
         if (!article) return ctx.error({ msg: '已被删除' });
 
-        if (!(article.authorId === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
+        if (!(String(article.authorId) === ctx.session.userId || ctx.isAdmin())) return ctx.error({ msg: '你没有权限' });
         
         const result = await ArticleModel.findOneAndRemove({ _id });
         if( !result ) return ctx.error({ msg: '文章删除失败' });
@@ -68,7 +68,7 @@ class ArticleController {
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
-        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(per_page).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
         return ctx.success({ data: articles });
@@ -90,7 +90,7 @@ class ArticleController {
         if (!page) page = 1;
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
-        const articles = await ArticleModel.find({ categoryId: _id }).sort({ updatedAt: '-1' }).skip(skip).limit(per_page).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const articles = await ArticleModel.find({ categoryId: _id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
         return ctx.success({ data: articles });
@@ -116,7 +116,7 @@ class ArticleController {
 
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
-        const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(per_page);
+        const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page));
 
         return ctx.success({ data: { article, comments } });
     }
