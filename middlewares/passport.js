@@ -1,5 +1,3 @@
-import md5 from 'md5';
-
 export default async (ctx, next) => {
     ctx.isAuthenticated = () => {
         if( ctx.session.userId ) {
