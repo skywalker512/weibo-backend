@@ -2,8 +2,7 @@ import md5 from 'md5';
 
 export default async (ctx, next) => {
     ctx.isAuthenticated = () => {
-        const sym = Object.getOwnPropertySymbols(ctx)[0];
-        if( ctx.cookies.get('weibo') && ctx.cookies.get('weibo') ===  ctx[sym].externalKey) {
+        if( ctx.session.userId ) {
             return true;
         } else {
             return false;
