@@ -15,8 +15,11 @@ class UserController {
         if (!userConfig.passwordPattern.test(password)) return ctx.error({ msg: '密码必须分别包含2个大小写字母,并且大于6个字符小于16个字符' });
         if (!userConfig.emailPattern.test(email)) return ctx.error({ msg: '请输入正确的邮箱地址' });
 
-        const isExit = await UserModel.findOne({ email });
-        if (isExit) return ctx.error({ msg: '邮箱已存在' });
+        const isExitEmail = await UserModel.findOne({ email });
+        if (isExitEmail) return ctx.error({ msg: '邮箱已存在' });
+
+        const isExitName = await UserModel.findOne({ name })
+        if(isExitName) return ctx.error({ msg: '用户名已存在' });
         const avatar = userConfig.gavatar + md5(email) + userConfig.gavaterOption;
         const result = await UserModel.create({ email, name, password: md5(password), avatar });
         if (!result) {
