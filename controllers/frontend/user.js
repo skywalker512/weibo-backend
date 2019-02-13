@@ -22,12 +22,11 @@ class UserController {
         if(isExitName) return ctx.error({ msg: '用户名已存在' });
         const avatar = userConfig.gavatar + md5(email) + userConfig.gavaterOption;
         const result = await UserModel.create({ email, name, password: md5(password), avatar });
-        if (!result) {
-            return ctx.error({ msg: '注册失败' });
-        } else {
-            ctx.setCookies( result._id, result.group );
-            return ctx.success({ msg: '注册成功' });
-        }
+        const res = await UserModel.findOne({_id: result._id},{ password: 0 })
+
+        if (!res) return ctx.error({ msg: '注册失败' });
+        ctx.setCookies( result._id, result.group );
+        return ctx.success({ msg: '注册成功', data: res });
     }
 
     static async login(ctx) {
