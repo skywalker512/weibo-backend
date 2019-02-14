@@ -4,7 +4,7 @@ import ArticleSchema from './article'
 const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema({
-    authorId: { type: Schema.Types.ObjectId, require: true }, // author: { type: Schema.Types.ObjectId, ref: 'User' },
+    authorId: { type: Schema.Types.ObjectId, require: true , ref: 'User'}, // author: { type: Schema.Types.ObjectId, ref: 'User' },
     articleId: { type: Schema.Types.ObjectId, require: true },
     praise: { type: Number, default: 0 },
     content: { type: String, required: true },

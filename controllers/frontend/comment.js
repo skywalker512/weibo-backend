@@ -1,4 +1,5 @@
 import CommentModel from '../../models/article/comment';
+import UserModel from '../../models/user/user'
 
 // 这里使用 类的静态方法来创建，在内存上的使用应该和使用对象或者实例化是相同的只是写起来明了一些
 class CommentController {
@@ -12,7 +13,9 @@ class CommentController {
 
         data.authorId = ctx.session.userId;
 
-        const result = await CommentModel.create(data);
+        let result = await CommentModel.create(data);
+        const user = await UserModel.findOne({_id: ctx.session.userId}, { name: 1, avatar: 1 })
+        result.authorId = user
         if (!result) return ctx.error({ msg: '评论创建失败' });
         return ctx.success({ msg: '发表成功', data: result });
     }
