@@ -117,7 +117,7 @@ class ArticleController {
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
         const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page));
-        const isParise = article.parise.indexOf(ctx.session.userId)
+        const isParise = article.praise.indexOf(ctx.session.userId)
         const isFavorite = article.favorite.indexOf(ctx.session.userId)
         return ctx.success({ data: { article, comments, status: {isParise, isFavorite} } });
     }
