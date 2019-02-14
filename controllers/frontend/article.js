@@ -117,29 +117,50 @@ class ArticleController {
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
         const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page));
-
-        return ctx.success({ data: { article, comments } });
+        const isParise = article.parise.indexOf(ctx.session.userId)
+        const isFavorite = article.favorite.indexOf(ctx.session.userId)
+        return ctx.success({ data: { article, comments, status: {isParise, isFavorite} } });
     }
 
     static async parise(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         const _id = ctx.params._id
         const article = await ArticleModel.findOne({ _id }, { praiseNum: 1, praise: 1})
-        console.log(_id, article)
         if( !article )  return ctx.error({ msg: '获取详情数据失败!' })
         if( article.praise.indexOf(ctx.session.userId) !== -1 ) {
             const praiseNum = Number(article.praiseNum) - 1
             article.praise.pop(ctx.session.userId)
             const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ praiseNum, praise: article.praise } }, { new:true })
             if(!result)  return ctx.error({ msg: '点赞失败' });
-            return ctx.success({ msg:'取消点赞成功'});
+            return ctx.success({ msg:'取消点赞成功' , data: result.praiseNum });
         } else {
             const praiseNum = Number(article.praiseNum) + 1
             article.praise.push(ctx.session.userId)
     
             const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ praiseNum, praise: article.praise } }, { new:true })
             if(!result)  return ctx.error({ msg: '点赞失败!' });
-            return ctx.success({ msg:'点赞成功'});
+            return ctx.success({ msg:'点赞成功', data: result.praiseNum });
+        }
+    }
+
+    static async favorite(ctx) {
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
+        const _id = ctx.params._id
+        const article = await ArticleModel.findOne({ _id }, { favoriteNum: 1, favorite: 1})
+        if( !article )  return ctx.error({ msg: '获取详情数据失败!' })
+        if( article.favorite.indexOf(ctx.session.userId) !== -1 ) {
+            const favoriteNum = Number(article.favoriteNum) - 1
+            article.favorite.pop(ctx.session.userId)
+            const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ favoriteNum, favorite: article.favorite } }, { new:true })
+            if(!result)  return ctx.error({ msg: '喜欢失败' });
+            return ctx.success({ msg:'取消喜欢成功' , data: result.favoriteNum });
+        } else {
+            const favoriteNum = Number(article.favoriteNum) + 1
+            article.favorite.push(ctx.session.userId)
+    
+            const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ favoriteNum, favorite: article.favorite } }, { new:true })
+            if(!result)  return ctx.error({ msg: '喜欢失败' });
+            return ctx.success({ msg:'喜欢成功', data: result.favoriteNum });
         }
     }
 

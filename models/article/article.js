@@ -13,6 +13,8 @@ const ArticleSchema = new Schema({
     review: { type: Number, default: 0 },
     praiseNum: { type: Number, default: 0 }, // 这里应该要考虑性能问题，不使用数据库查询总个数而是直接统计
     praise: [{ type: Schema.Types.ObjectId, ref:'User' }],
+    favoriteNum: { type: Number, default: 0 },
+    favorite: [{ type: Schema.Types.ObjectId, ref:'User' }],
     content: { type: String, required: true },
     commentNum: { type: Number, default: 0 },
     // comments: [{ type: Schema.Types.ObjectId, ref:'Comment' }], 为了删除方便 使用 我属于谁的 方式
