@@ -7,7 +7,8 @@ class CommentController {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 2)) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length === 1)) return ctx.error({ msg: '数据发送失败' });
+        data.articleId = ctx.params._id
 
         data.authorId = ctx.session.userId;
 
