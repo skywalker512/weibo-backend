@@ -121,6 +121,28 @@ class ArticleController {
         return ctx.success({ data: { article, comments } });
     }
 
+    static async parise(ctx) {
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
+        const _id = ctx.params._id
+        const article = await ArticleModel.findOne({ _id }, { praiseNum: 1, praise: 1})
+        console.log(_id, article)
+        if( !article )  return ctx.error({ msg: '获取详情数据失败!' })
+        if( article.praise.indexOf(ctx.session.userId) !== -1 ) {
+            const praiseNum = Number(article.praiseNum) - 1
+            article.praise.pop(ctx.session.userId)
+            const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ praiseNum, praise: article.praise } }, { new:true })
+            if(!result)  return ctx.error({ msg: '点赞失败' });
+            return ctx.success({ msg:'取消点赞成功'});
+        } else {
+            const praiseNum = Number(article.praiseNum) + 1
+            article.praise.push(ctx.session.userId)
+    
+            const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ praiseNum, praise: article.praise } }, { new:true })
+            if(!result)  return ctx.error({ msg: '点赞失败!' });
+            return ctx.success({ msg:'点赞成功'});
+        }
+    }
+
 }
 
 export default ArticleController;
