@@ -6,7 +6,6 @@ const Schema = mongoose.Schema;
 
 const ArticleSchema = new Schema({
     categoryId: { type: Schema.Types.ObjectId, required: true, ref: 'Catagory' },
-    cover: { type: String, default: null },
     authorId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
     changedBy: { type: Schema.Types.ObjectId, default: null, ref: 'User' },
     review: { type: Number, default: 0 },

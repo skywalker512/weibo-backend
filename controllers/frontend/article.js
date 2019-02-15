@@ -4,6 +4,7 @@ import CommentModel from '../../models/article/comment';
 import UserModel from '../../models/user/user'
 import FavoriteModel from '../../models/article/favorite'
 import PraiseModel from '../../models/article/praise'
+import ImageModel from '../../models/article/image'
 
 // 这里使用 类的静态方法来创建，在内存上的使用应该和使用对象或者实例化是相同的只是写起来明了一些
 class ArticleController {
@@ -12,7 +13,9 @@ class ArticleController {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 2)) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
+        const images = data.images.split(",");
+        delete data.images
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.authorId = ctx.session.userId;
@@ -20,6 +23,9 @@ class ArticleController {
         // const temp = new ArticleModel(data)
         // const result = await temp.save()
         let result = await ArticleModel.create(data);
+        images.forEach(async value=>{
+            await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
+        })
         const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
         result.authorId = user
         if (!result) return ctx.error({ msg: '文章创建失败' });
