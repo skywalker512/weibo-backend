@@ -121,6 +121,13 @@ class ArticleController {
         const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 });
         let isParise=0, isFavorite=0
         if (ctx.session.userId) {
+            comments.map(async function (value){
+                const commentParise = await PraiseModel.findOne({ articleId: value._id, authorId: ctx.session.userId })
+                if(commentParise) {
+                    value.isPraise = 1
+                }
+                return value
+            })
             const parise = await PraiseModel.find({ articleId: _id, authorId: ctx.session.userId })
             isParise = parise.length
             const favorite = await FavoriteModel.find({ articleId: _id, authorId: ctx.session.userId })
