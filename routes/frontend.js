@@ -27,7 +27,7 @@ router
     .delete('/article/:_id', ArticleController.deleteArticle) // 删除文章
     .post('/article/:_id/parise', ArticleController.parise) // 点赞
     .post('/article/:_id/favorite', ArticleController.favorite) // 喜欢
-    .post('/article/:_id/comment', CommentController.publishComment)
+    .post('/article/comment', CommentController.publishComment)
     .post('/article/comment/:_id/parise', CommentController.parise)
 
     // 用户相关
