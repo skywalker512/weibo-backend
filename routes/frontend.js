@@ -25,10 +25,10 @@ router
     .get('/article/:_id', ArticleController.getArticleDetail) // 获取某个文章的详细信息
     .put('/article/:_id', ArticleController.changeArticle) // 更新文章 提供文章的全部信息
     .delete('/article/:_id', ArticleController.deleteArticle) // 删除文章
-    .post('/article/:_id/parise', ArticleController.parise) // 点赞
+    .post('/article/:_id/praise', ArticleController.praise) // 点赞
     .post('/article/:_id/favorite', ArticleController.favorite) // 喜欢
     .post('/article/comment', CommentController.publishComment)
-    .post('/article/comment/:_id/parise', CommentController.parise)
+    .post('/article/comment/:_id/praise', CommentController.praise)
 
     // 用户相关
     .post('/login', UserController.login)

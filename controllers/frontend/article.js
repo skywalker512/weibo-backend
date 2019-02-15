@@ -119,30 +119,30 @@ class ArticleController {
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
         const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 });
-        let isParise=0, isFavorite=0
+        let isPraise=0, isFavorite=0
         if (ctx.session.userId) {
             comments.map(async function (value){
-                const commentParise = await PraiseModel.findOne({ articleId: value._id, authorId: ctx.session.userId })
-                if(commentParise) {
+                const commentPraise = await PraiseModel.findOne({ articleId: value._id, authorId: ctx.session.userId })
+                if(commentPraise) {
                     value.isPraise = 1
                 }
                 return value
             })
-            const parise = await PraiseModel.find({ articleId: _id, authorId: ctx.session.userId })
-            isParise = parise.length
+            const praise = await PraiseModel.find({ articleId: _id, authorId: ctx.session.userId })
+            isPraise = praise.length
             const favorite = await FavoriteModel.find({ articleId: _id, authorId: ctx.session.userId })
             isFavorite = favorite.length
         }
-        return ctx.success({ data: { article, comments, status: {isParise, isFavorite} } });
+        return ctx.success({ data: { article, comments, status: {isPraise, isFavorite} } });
     }
 
-    static async parise(ctx) {
+    static async praise(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         const _id = ctx.params._id
         const article = await ArticleModel.findOne({ _id }, { praiseNum: 1, praise: 1})
         if( !article )  return ctx.error({ msg: '获取详情数据失败!' })
-        const parise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
-        if( parise ) {
+        const praise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
+        if( praise ) {
             const praiseNum = Number(article.praiseNum) - 1
             await PraiseModel.deleteOne({ articleId: _id, authorId: ctx.session.userId })
             const result = await ArticleModel.findOneAndUpdate({ _id }, { $set:{ praiseNum } }, { new:true })

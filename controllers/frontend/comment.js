@@ -20,13 +20,13 @@ class CommentController {
     }
 
     // 评论点赞
-    static async parise(ctx) {
+    static async praise(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         const _id = ctx.params._id
         const comment = await CommentModel.findOne({ _id }, { praiseNum: 1, praise: 1})
         if( !comment )  return ctx.error({ msg: '获取详情数据失败!' })
-        const parise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
-        if( parise ) {
+        const praise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
+        if( praise ) {
             const praiseNum = Number(comment.praiseNum) - 1
             await PraiseModel.deleteOne({ articleId: _id, authorId: ctx.session.userId })
             const result = await CommentModel.findOneAndUpdate({ _id }, { $set:{ praiseNum } }, { new:true })
