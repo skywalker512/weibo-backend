@@ -23,8 +23,10 @@ class ArticleController {
         // const temp = new ArticleModel(data)
         // const result = await temp.save()
         let result = await ArticleModel.create(data);
+        let imageIds = []
         images.forEach(async value=>{
-            await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
+            const imageId = await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
+            imageIds.push(imageId)
         })
         const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
         result.authorId = user
@@ -131,17 +133,16 @@ class ArticleController {
 
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
-        const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 });
+        const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).lean(true); // 通过 lean 将此转换为 js 的对象方便操作
         let isPraise=0, isFavorite=0
         if (ctx.session.userId) {
-            comments.map(async function (value){
+            // 使用 for 循环 实现异步，如果这里如果使用 同步代码在第二次查询的时候会特别的慢
+            for (const value of comments) {
                 const commentPraise = await PraiseModel.findOne({ articleId: value._id, authorId: ctx.session.userId })
                 if(commentPraise) {
-                    value.isPraise = 1
+                    value.isPraise = 1 
                 }
-                return value
-            })
-            // 消耗时间的大户
+            }
             const praise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
             isPraise = praise ? 1 : 0
             const favorite = await FavoriteModel.findOne({ articleId: _id, authorId: ctx.session.userId })
