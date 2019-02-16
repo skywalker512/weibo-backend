@@ -139,9 +139,7 @@ class ArticleController {
             // 使用 for 循环 实现异步，如果这里如果使用 同步代码在第二次查询的时候会特别的慢
             for (const value of comments) {
                 const commentPraise = await PraiseModel.findOne({ articleId: value._id, authorId: ctx.session.userId })
-                if(commentPraise) {
-                    value.isPraise = 1 
-                }
+                value.isPraise = commentPraise ? 1 : 0
             }
             const praise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
             isPraise = praise ? 1 : 0
