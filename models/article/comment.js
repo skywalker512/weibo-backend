@@ -22,11 +22,7 @@ CommentSchema.pre('validate', async function(next) {
 })
 
 CommentSchema.post('save',  async function(doc) {
-    await ArticleSchema.findOne({ _id: doc.articleId }, async function( err, doc ){
-        doc.commentNum++;
-        doc.lastCommentAt == Date.now();
-        await doc.save();
-    });
+    await ArticleSchema.findOneAndUpdate({ _id: doc.articleId }, { $inc: { commentNum: 1 } });
 });
 
 export default mongoose.model('Comment', CommentSchema);
