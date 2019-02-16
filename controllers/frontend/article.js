@@ -76,10 +76,17 @@ class ArticleController {
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
-        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
-        if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
+        const article = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        let images = []
+        article.forEach(async value=>{
+            const image = await ImageModel.find({ articleId: value._id })
+            if (image) images.push(image)
+            else images.push('fdsffd')
+        })
+        
+        if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
-        return ctx.success({ data: articles });
+        return ctx.success({ data: {article, images} });
     }
 
     // 获取分类信息
@@ -134,18 +141,19 @@ class ArticleController {
                 }
                 return value
             })
-            const praise = await PraiseModel.find({ articleId: _id, authorId: ctx.session.userId })
-            isPraise = praise.length
-            const favorite = await FavoriteModel.find({ articleId: _id, authorId: ctx.session.userId })
-            isFavorite = favorite.length
+            // 消耗时间的大户
+            const praise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
+            isPraise = praise ? 1 : 0
+            const favorite = await FavoriteModel.findOne({ articleId: _id, authorId: ctx.session.userId })
+            isFavorite = favorite ? 1 : 0
         }
-        return ctx.success({ data: { article, comments, status: {isPraise, isFavorite} } });
+        return ctx.success({ data: { article: article, comments, status: {isPraise, isFavorite} } });
     }
 
     static async praise(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         const _id = ctx.params._id
-        const article = await ArticleModel.findOne({ _id }, { praiseNum: 1, praise: 1})
+        const article = await ArticleModel.findOne({ _id }, { praiseNum: 1 })
         if( !article )  return ctx.error({ msg: '获取详情数据失败!' })
         const praise = await PraiseModel.findOne({ articleId: _id, authorId: ctx.session.userId })
         if( praise ) {
@@ -166,7 +174,7 @@ class ArticleController {
     static async favorite(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
         const _id = ctx.params._id
-        const article = await ArticleModel.findOne({ _id }, { favoriteNum: 1, favorite: 1})
+        const article = await ArticleModel.findOne({ _id }, { favoriteNum: 1 })
         if( !article )  return ctx.error({ msg: '获取详情数据失败!' })
         const favorite = await FavoriteModel.findOne({ articleId: _id, authorId: ctx.session.userId })
         if( favorite ) {

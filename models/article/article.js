@@ -13,10 +13,8 @@ const ArticleSchema = new Schema({
     favoriteNum: { type: Number, default: 0 },
     content: { type: String, required: true },
     commentNum: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
     lastCommentAt: { type: Date, default: Date.now }, // 最热话题
-})
+}, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }})
 
 ArticleSchema.pre('validate', async function(next) {
     const res1 = await CategoryModel.findOne({ _id: this.categoryId });
@@ -31,10 +29,8 @@ ArticleSchema.post('findOneAndRemove', async function(doc) {
     await CommentModel.deleteMany({ articleId: doc._id });
 });
 
-ArticleSchema.post('findOneAndUpdate', async function(doc) {
+ArticleSchema.post('save', async function(doc) {
     await CategoryModel.findOneAndUpdate({ _id: doc.categoryId }, { $set: { lastPublishAt: Date.now() } });
-    doc.updatedAt = Date.now();
-    await doc.save();
 })
 
 export default mongoose.model('Article', ArticleSchema);

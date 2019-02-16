@@ -11,6 +11,6 @@ const ImageSchema = new Schema({
     path: { type: String, default: null }, // 储存位置，在这里 url 由查询的时候再拼接
     hash: { type: String, default: null }, // smms 的特殊配置
     size: { type: Number, required: true },
-})
+}, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }})
 
 export default mongoose.model('Image', ImageSchema)
