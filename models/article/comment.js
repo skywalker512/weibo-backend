@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema({
     authorId: { type: Schema.Types.ObjectId, require: true , ref: 'User'}, // author: { type: Schema.Types.ObjectId, ref: 'User' },
-    // articleId: { type: Schema.Types.ObjectId, require: true },
+    articleId: { type: Schema.Types.ObjectId, require: true },
     // isPraise: { type: Number, default: 0 }, // 通过 lean 将此换为 js 的对象方便操作
     praiseNum: { type: Number, default: 0 },
     content: { type: String, required: true },
