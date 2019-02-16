@@ -78,13 +78,10 @@ class ArticleController {
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
-        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
-        let images = []
-        articles.forEach(async value=>{
-            const image = await ImageModel.find({ articleId: value._id })
-            if (image) images.push(image)
-            else images.push('fdsffd')
-        })
+        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        for(const value of articles) {
+            value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+        }
         
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
@@ -107,7 +104,10 @@ class ArticleController {
         if (!page) page = 1;
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
-        const articles = await ArticleModel.find({ categoryId: _id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const articles = await ArticleModel.find({ categoryId: _id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        for(const value of articles) {
+            value.images =  await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+        }
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
         return ctx.success({ data: articles });
@@ -120,7 +120,8 @@ class ArticleController {
 
         let { per_page, page } = ctx.query;
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
-        const article = await ArticleModel.findOne({_id}).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 });
+        const article = await ArticleModel.findOne({_id}).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        article.images = await ImageModel.find({ articleId: article._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         const review = article.review + 1;

@@ -25,6 +25,7 @@
     "koa-views": "^5.2.1",
     "md5": "^2.2.1",
     "mongoose": "^5.4.10",
+    "mongoose-lean-virtuals": "^0.3.4",
     "nodemailer": "^5.1.1"
   },
   "devDependencies": {

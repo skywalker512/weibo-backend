@@ -23,4 +23,8 @@ const user = {
     gavaterOption: '?d=retro&s=64',
 }
 
-export { config, user }
+const url = {
+    smms: 'https://i.loli.net'
+}
+
+export { config, user, url }
