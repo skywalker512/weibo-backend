@@ -23,11 +23,11 @@ class ArticleController {
         // const temp = new ArticleModel(data)
         // const result = await temp.save()
         let result = await ArticleModel.create(data);
-        let imageIds = []
-        images.forEach(async value=>{
-            const imageId = await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
-            imageIds.push(imageId)
-        })
+
+        // 异步代码
+        for(const value of images) {
+            await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
+        }
         const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
         result.authorId = user
         if (!result) return ctx.error({ msg: '文章创建失败' });
