@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const CommentSchema = new Schema({
     authorId: { type: Schema.Types.ObjectId, require: true , ref: 'User'}, // author: { type: Schema.Types.ObjectId, ref: 'User' },
     articleId: { type: Schema.Types.ObjectId, require: true },
+    isPraise: { type: Number, default: 0 }, // 临时解决方案
     praiseNum: { type: Number, default: 0 },
     content: { type: String, required: true },
 }, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
