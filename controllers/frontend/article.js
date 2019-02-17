@@ -13,7 +13,7 @@ class ArticleController {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
         const data = ctx.request.body;
-        if (!(Object.keys(data).length === 3)) return ctx.error({ msg: '数据发送失败' });
+        if (!(Object.keys(data).length > 1)) return ctx.error({ msg: '数据发送失败' });
         const images = data.images.split(",");
         delete data.images
 
@@ -25,8 +25,10 @@ class ArticleController {
         let result = await ArticleModel.create(data);
 
         // 异步代码
-        for(const value of images) {
-            await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
+        if(images[0] !== '') {
+            for(const value of images) {
+                await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
+            }
         }
         const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
         result.authorId = user
