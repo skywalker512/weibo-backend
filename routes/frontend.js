@@ -37,5 +37,6 @@ router
     .post('/register', UserController.register)
     .get('/logout', UserController.logout)
     .get('/user', UserController.getUser) // 获取当前用户
+    .patch('/user/:_id', UserController.patchUser)
 
 export default router; // 简洁写法

@@ -68,6 +68,21 @@ class UserController {
         if (!result) return ctx.error({ msg: '未知问题' });
         ctx.success({ msg: '查询成功', data: result });
     }
+
+    static async patchUser(ctx) {
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
+
+        const _id = ctx.params._id
+        if (!_id) return ctx.error({ msg: '数据发送失败' })
+
+        const { profile } = ctx.request.body
+        if ( profile ) {
+            await UserModel.findOneAndUpdate({ _id }, { $set:{ profile } })
+            ctx.success({ msg: '修改成功' });
+        } else {
+            return ctx.error({ msg: '没有修改的东西' })
+        }
+    }
 }
 
 export default UserController;

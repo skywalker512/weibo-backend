@@ -202,6 +202,7 @@ class ArticleController {
             value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         }
         const user = await UserModel.findOne( {_id}, { password: 0 } ).lean()
+        user.isMe = ctx.session.userId ===  String(user._id) ? 1 : 0
         user.favorite = await FavoriteModel.findOne({ authorId: _id }, {articleId:1, _id:0}).count()
         return ctx.success({ data: {user, article} });
     }
