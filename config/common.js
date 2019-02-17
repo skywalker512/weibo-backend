@@ -20,7 +20,7 @@ const user = {
     emailPattern: /^.*(?=.{1,30})(?=.*[@]).*$/,
 
     gavatar: 'https://cdn.v2ex.com/gravatar/',
-    gavaterOption: '?d=retro&s=64',
+    gavaterOption: '?d=retro&s=100',
 }
 
 const url = {
