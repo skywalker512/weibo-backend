@@ -30,6 +30,7 @@ router
     .post('/comment', CommentController.publishComment)
     .post('/comment/:_id/praise', CommentController.praise)
     .post('/image', ImageController.createImage)
+    .get('/user/:_id', ArticleController.user)
 
     // 用户相关
     .post('/login', UserController.login)

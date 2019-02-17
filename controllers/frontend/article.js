@@ -193,6 +193,18 @@ class ArticleController {
             return ctx.success({ msg:'喜欢成功', data: result.favoriteNum });
         }
     }
+    // 获取某个用户的文章列表
+    static async user(ctx) {
+        const _id = ctx.params._id
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
+        const article = await ArticleModel.find({authorId: _id}, { createdAt: 0, lastCommentAt:0, changedBy: 0 , praise: 0 }).sort({ updatedAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        for(const value of article) {
+            value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+        }
+        const user = await UserModel.findOne( {_id}, { password: 0 } ).lean()
+        user.favorite = await FavoriteModel.findOne({ authorId: _id }, {articleId:1, _id:0}).count()
+        return ctx.success({ data: {user, article} });
+    }
 
 }
 

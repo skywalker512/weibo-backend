@@ -12,7 +12,6 @@ const UserSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }, // 用户资料的更新
   lastPublishAt: { type: Date, default: Date.now },  // 用户最后发帖
-  like: [{ type: Schema.Types.ObjectId, ref: 'Article' }], // 喜欢
 });
 
 export default mongoose.model('User', UserSchema);
