@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { ArticleController, UserController, CommentController, IndexController, ImageController } from '../controllers/frontend'
+import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest } from '../controllers/frontend'
 
 const router = new Router({ prefix: '/api' });
 
@@ -38,5 +38,10 @@ router
     .get('/logout', UserController.logout)
     .get('/user', UserController.getUser) // 获取当前用户
     .patch('/user/:_id', UserController.patchUser)
+
+
+    // geetest
+    .get('/geetest/register', Geetest.register)
+    .post('/geetest/validate', Geetest.validate)
 
 export default router; // 简洁写法
