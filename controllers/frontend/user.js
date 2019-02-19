@@ -6,6 +6,8 @@ class UserController {
 
     static async register(ctx) {
         if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
+        if (!ctx.session.isPass) return ctx.error({ msg: '您没有通过验证' });
+        ctx.session.isPass = false // 用完既销毁 将状态取消
 
         const { email, name, password } = ctx.request.body;
 
@@ -32,6 +34,7 @@ class UserController {
     static async login(ctx) {
         if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
         if (!ctx.session.isPass) return ctx.error({ msg: '您没有通过验证' });
+        ctx.session.isPass = false // 用完既销毁 将状态取消
 
         const { info, password } = ctx.request.body;
         if (!info || !password) return ctx.error({ msg: '提交的信息不能为空不能为空' });
