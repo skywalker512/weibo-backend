@@ -1,4 +1,7 @@
 import UserModel from '../../models/user/user';
+import ArticleModel from '../../models/article/article';
+import FavoriteModel from '../../models/article/favorite'
+import ImageModel from '../../models/article/image'
 import md5 from 'md5';
 import { user as userConfig } from '../../config/common'
 
@@ -86,6 +89,32 @@ class UserController {
         } else {
             return ctx.error({ msg: '没有修改的东西' })
         }
+    }
+
+    static async getSpecialUser(ctx) {
+        const _id = ctx.params._id
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
+        const article = await ArticleModel.find({authorId: _id}, { createdAt: 0, lastCommentAt:0, changedBy: 0 }).sort({ updatedAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
+        for(const value of article) {
+            value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+        }
+        const user = await UserModel.findOne( {_id}, { password: 0 } ).lean()
+        user.isMe = ctx.session.userId ===  String(user._id) ? 1 : 0
+        return ctx.success({ data: {user, article} });
+    }
+
+    static async getSpecialUserFavorite(ctx) {
+        const _id = ctx.params._id
+        if (!_id) return ctx.error({ msg: '数据发送失败' });
+        const favorite = await FavoriteModel.find({ authorId: _id },{ articleId: 1 }).populate('articleId', { createdAt: 0, lastCommentAt:0, changedBy: 0 }).lean()
+        const article = []
+        for(const value of favorite) {
+            const user = await UserModel.findOne({ _id: value.articleId.authorId }, { name: 1, avatar: 1 })
+            value.articleId.authorId = user
+            value.articleId.images = await ImageModel.find({ articleId: value.articleId._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+            article.push(value.articleId)
+        }
+        return ctx.success({ data: article });
     }
 }
 

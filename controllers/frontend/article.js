@@ -137,8 +137,9 @@ class ArticleController {
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
         const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).lean(true); // 通过 lean 将此转换为 js 的对象方便操作
-        let isPraise=0, isFavorite=0
+        let isPraise=0, isFavorite=0, isLogined=0
         if (ctx.session.userId) {
+            isLogined=1
             // 使用 for 循环 实现异步，如果这里如果使用 同步代码在第二次查询的时候会特别的慢
             for (const value of comments) {
                 const commentPraise = await PraiseModel.findOne({ articleId: value._id, authorId: ctx.session.userId })
@@ -149,7 +150,7 @@ class ArticleController {
             const favorite = await FavoriteModel.findOne({ articleId: _id, authorId: ctx.session.userId })
             isFavorite = favorite ? 1 : 0
         }
-        return ctx.success({ data: { article: article, comments, status: {isPraise, isFavorite} } });
+        return ctx.success({ data: { article: article, comments, status: {isPraise, isFavorite, isLogined} } });
     }
 
     static async praise(ctx) {
@@ -193,20 +194,6 @@ class ArticleController {
             return ctx.success({ msg:'喜欢成功', data: result.favoriteNum });
         }
     }
-    // 获取某个用户的文章列表
-    static async user(ctx) {
-        const _id = ctx.params._id
-        if (!_id) return ctx.error({ msg: '数据发送失败' });
-        const article = await ArticleModel.find({authorId: _id}, { createdAt: 0, lastCommentAt:0, changedBy: 0 , praise: 0 }).sort({ updatedAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
-        for(const value of article) {
-            value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
-        }
-        const user = await UserModel.findOne( {_id}, { password: 0 } ).lean()
-        user.isMe = ctx.session.userId ===  String(user._id) ? 1 : 0
-        user.favorite = await FavoriteModel.findOne({ authorId: _id }, {articleId:1, _id:0}).count()
-        return ctx.success({ data: {user, article} });
-    }
-
 }
 
 export default ArticleController;

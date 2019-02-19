@@ -30,13 +30,14 @@ router
     .post('/comment', CommentController.publishComment)
     .post('/comment/:_id/praise', CommentController.praise)
     .post('/image', ImageController.createImage)
-    .get('/user/:_id', ArticleController.user)
 
     // 用户相关
     .post('/login', UserController.login)
     .post('/register', UserController.register)
     .get('/logout', UserController.logout)
     .get('/user', UserController.getUser) // 获取当前用户
+    .get('/user/:_id', UserController.getSpecialUser) // 获取特定用户
+    .get('/user/:_id/favorite', UserController.getSpecialUserFavorite)
     .patch('/user/:_id', UserController.patchUser)
 
 
