@@ -82,9 +82,12 @@ class UserController {
         const _id = ctx.params._id
         if (!_id) return ctx.error({ msg: '数据发送失败' })
 
-        const { profile } = ctx.request.body
+        const { profile, avatar } = ctx.request.body
         if ( profile ) {
             await UserModel.findOneAndUpdate({ _id }, { $set:{ profile } })
+            ctx.success({ msg: '修改成功' });
+        } else if (avatar) {
+            await UserModel.findOneAndUpdate({ _id }, { $set:{ avatar } })
             ctx.success({ msg: '修改成功' });
         } else {
             return ctx.error({ msg: '没有修改的东西' })
