@@ -1,3 +1,6 @@
+// env
+import 'dotenv/config'
+
 import Koa from 'koa';
 // import views from 'koa-views';
 import json from 'koa-json'; // 用于 美化 json
