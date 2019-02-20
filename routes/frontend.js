@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest } from '../controllers/frontend'
+import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun } from '../controllers/frontend'
 
 const router = new Router({ prefix: '/api' });
 
@@ -44,5 +44,8 @@ router
     // geetest
     .get('/geetest/register', Geetest.register)
     .post('/geetest/validate', Geetest.validate)
+
+    // Upyun
+    .get('/upyun/sign', Upyun.getHeaderSign)
 
 export default router; // 简洁写法
