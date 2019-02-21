@@ -39,7 +39,7 @@ const CONFIG = {
     overwrite: true,
     signed: true,
     // session 默认保存在 用户端 使用 Redis 保存在服务器端 以防泄露
-    store: new Redis(),
+    store: new Redis({ url: process.env.REDIS  }),
 };
 app.use(session(CONFIG, app));
 

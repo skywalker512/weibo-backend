@@ -1,7 +1,7 @@
 const config = {
     development: {
         mongo: {
-            uri: 'mongodb://localhost:27017/weibotest' // uri? 统一资源标识符
+            uri: process.env.MONGO // uri? 统一资源标识符
         }
     }
 }
