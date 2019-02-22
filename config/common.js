@@ -24,7 +24,8 @@ const user = {
 }
 
 const url = {
-    smms: 'https://i.loli.net'
+    smms: 'https://i.loli.net',
+    upyun: process.env.UPYUN_URL,
 }
 
 export { config, user, url }
