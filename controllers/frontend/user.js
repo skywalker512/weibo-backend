@@ -31,6 +31,7 @@ class UserController {
 
         if (!res) return ctx.error({ msg: '注册失败' });
         ctx.setCookies( result._id, result.group );
+        ctx.session.maxAge = 0;
         return ctx.success({ msg: '注册成功', data: res });
     }
 
@@ -39,7 +40,7 @@ class UserController {
         if (!ctx.session.isPass) return ctx.error({ msg: '您没有通过验证' });
         ctx.session.isPass = false // 用完既销毁 将状态取消
 
-        const { info, password } = ctx.request.body;
+        const { info, password, isKeep } = ctx.request.body;
         if (!info || !password) return ctx.error({ msg: '提交的信息不能为空不能为空' });
         // 仅检查密码
         if (!userConfig.passwordPattern.test(password)) return ctx.error({ msg: '密码必须分别包含2个大小写字母,并且大于6个字符小于16个字符' });
@@ -56,6 +57,7 @@ class UserController {
         if (!result) return ctx.error({ msg: '登陆信息错误' });
         // 种下 Cookies
         ctx.setCookies(result._id, result.group);
+        if(Number(isKeep) === 0) ctx.session.maxAge = 0;
         // 这里在登陆的时候就传回数据，以减少请求
         ctx.success({ msg: '登录成功', data: result });
     }
