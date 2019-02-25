@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun } from '../controllers/frontend'
+import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search } from '../controllers/frontend'
 
 const router = new Router({ prefix: '/api' });
 
@@ -47,5 +47,8 @@ router
 
     // Upyun
     .get('/upyun/sign', Upyun.getHeaderSign)
+
+    // 搜索
+    .get('/search/:data', Search.SearchArticle)
 
 export default router; // 简洁写法

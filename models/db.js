@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { config } from '../config/common';
 
 const dbConfig = config.development; // 环境配置
-
+mongoose.set('useCreateIndex', true);
 mongoose.connect(dbConfig.mongo.uri, { useNewUrlParser: true });
 
 
