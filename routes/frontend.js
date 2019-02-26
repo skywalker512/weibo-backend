@@ -40,6 +40,7 @@ router
     .get('/user/:_id/favorite', UserController.getSpecialUserFavorite)
     .get('/user/:_id/star', UserController.starUser)
     .patch('/user/:_id', UserController.patchUser)
+    .post('/user/verifyemail', UserController.verifyEmail)
 
 
     // geetest

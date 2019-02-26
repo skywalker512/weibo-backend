@@ -3,10 +3,37 @@ import ArticleModel from '../../models/article/article';
 import FavoriteModel from '../../models/article/favorite'
 import ImageModel from '../../models/article/image'
 import StarModel from '../../models/user/star'
+import Redis from 'koa-redis'
+import nodeMailer from 'nodemailer'
 import md5 from 'md5';
 import { user as userConfig } from '../../config/common'
+import mailConfig from '../../config/email'
+
+const Store = new Redis({ url: process.env.REDIS  }).client
 
 class UserController {
+    static async verifyEmail(ctx) {
+        if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
+        const {email} = ctx.request.body
+        if (!email) return ctx.error({ msg: '数据发送失败' })
+        const ko = {
+            code: mailConfig.code(),
+            expire: mailConfig.expire(),
+            email,
+        }
+        const mailOption = mailConfig.mailOption(ko.code, ko.email)
+        const transporter = nodeMailer.createTransport(mailConfig.smtp)
+        let isSend = 0
+        await transporter.sendMail(mailOption).then(()=>{
+            Store.hmset(`nodemail:${ko.email}`, 'code', ko.code, 'expire', ko.expire)
+            isSend = 1
+        })
+        if(isSend === 1) {
+            return ctx.success({ msg: '邮件发送成功' }) 
+        }else{
+            return ctx.error({ msg:'邮件发送失败' })
+        }
+    }
 
     static async register(ctx) {
         if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
