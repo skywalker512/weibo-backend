@@ -25,7 +25,9 @@ class UserController {
         const transporter = nodeMailer.createTransport(mailConfig.smtp)
         let isSend = 0
         await transporter.sendMail(mailOption).then(()=>{
-            Store.hmset(`nodemail:${ko.email}`, 'code', ko.code, 'expire', ko.expire)
+            Store.hmset(`mail:${ko.email}`, 'code', ko.code)
+            // Store.set(`mail:${ko.email}`, JSON.stringify({ code: ko.code, _expire: ko.expire }))
+            Store.pexpireat(`mail:${ko.email}`, ko.expire)
             isSend = 1
         })
         if(isSend === 1) {
