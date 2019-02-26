@@ -23,7 +23,7 @@ import './models/db';
 
 const app = new Koa();
 // error handler
-onerror(app);
+if (String(process.env.APP_DEBUG)==='true') onerror(app);
 
 // middlewares
 app.use(bodyparser({
