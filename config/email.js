@@ -18,7 +18,7 @@ const email = {
     },
     get expire() {
         return () => {
-            return new Date().getTime() + 60 * 60 * 1000
+            return new Date().getTime() + 15 * 60 * 1000 // 15 分钟内有效
         }
     },
     get mailOption() {
