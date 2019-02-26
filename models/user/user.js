@@ -9,9 +9,7 @@ const UserSchema = new Schema({
   avatar: { type: String, default: '' },    // 头像
   profile: { type: String, default: '' },   // 个人简介
   password: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }, // 用户资料的更新
   lastPublishAt: { type: Date, default: Date.now },  // 用户最后发帖
-});
+},{ timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }});
 
 export default mongoose.model('User', UserSchema);
