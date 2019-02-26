@@ -2,6 +2,7 @@ import UserModel from '../../models/user/user';
 import ArticleModel from '../../models/article/article';
 import FavoriteModel from '../../models/article/favorite'
 import ImageModel from '../../models/article/image'
+import StarModel from '../../models/user/star'
 import md5 from 'md5';
 import { user as userConfig } from '../../config/common'
 
@@ -120,6 +121,27 @@ class UserController {
             article.push(value.articleId)
         }
         return ctx.success({ data: article });
+    }
+
+    static async starUser(ctx) {
+        if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
+        const _id = ctx.params._id
+        if (!_id) return ctx.error({ msg: '数据发送失败' })
+        const starUser = await UserModel.findOne({ _id })
+        if (!starUser) return ctx.error({ msg: '获取详情数据失败!' })
+        const nowStar = await StarModel.findOne({ authorId: ctx.session.userId, starUserId: _id })
+        if (String(_id) === String(ctx.session.userId)) return ctx.error({ msg:'你不能关注你自己' }) // js 不知道数据类型比较头疼
+        if (nowStar) {
+            await StarModel.deleteOne({ authorId: ctx.session.userId, starUserId: _id })
+            await UserModel.findOneAndUpdate({ _id }, { $inc: { starMeNum: -1 }}) // 粉丝数减一
+            await UserModel.findOneAndUpdate({ _id: ctx.session.userId }, { $inc: { starOtherNum: -1 }}) // 我关注的用户减一
+            return ctx.success({ msg:'取消关注成功' })
+        } else {
+            await StarModel.create({ authorId: ctx.session.userId, starUserId: _id })
+            await UserModel.findOneAndUpdate({ _id }, { $inc: { starMeNum: 1 }}) // 粉丝数加一
+            await UserModel.findOneAndUpdate({ _id: ctx.session.userId }, { $inc: { starOtherNum: 1 }}) // 我关注的用户加一
+            return ctx.success({ msg:'关注成功' })
+        }
     }
 }
 

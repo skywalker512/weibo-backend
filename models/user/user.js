@@ -9,6 +9,8 @@ const UserSchema = new Schema({
   avatar: { type: String, default: '' },    // 头像
   profile: { type: String, default: '' },   // 个人简介
   password: { type: String, required: true },
+  starMeNum: { type: Number, default: 0 }, // 粉丝数
+  starOtherNum:{ type: Number, default: 0 }, // 关注的用户数
   lastPublishAt: { type: Date, default: Date.now },  // 用户最后发帖
 },{ timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }});
 

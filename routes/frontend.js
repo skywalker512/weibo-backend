@@ -38,6 +38,7 @@ router
     .get('/user', UserController.getUser) // 获取当前用户
     .get('/user/:_id', UserController.getSpecialUser) // 获取特定用户
     .get('/user/:_id/favorite', UserController.getSpecialUserFavorite)
+    .get('/user/:_id/star', UserController.starUser)
     .patch('/user/:_id', UserController.patchUser)
 
 
