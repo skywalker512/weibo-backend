@@ -26,7 +26,6 @@ class UserController {
         let isSend = 0
         await transporter.sendMail(mailOption).then(()=>{
             Store.hmset(`mail:${ko.email}`, 'code', ko.code)
-            // Store.set(`mail:${ko.email}`, JSON.stringify({ code: ko.code, _expire: ko.expire }))
             Store.pexpireat(`mail:${ko.email}`, ko.expire)
             isSend = 1
         })
@@ -42,10 +41,13 @@ class UserController {
         if (!ctx.session.isPass) return ctx.error({ msg: '您没有通过验证' });
         ctx.session.isPass = false // 用完既销毁 将状态取消
 
-        const { email, name, password } = ctx.request.body;
+        const { email, name, password, code } = ctx.request.body;
 
         // 为什么不在前端验证，因为接口是开放的，这样就可以注册空用户名了
-        if (!name || !password || !email) return ctx.error({ msg: '提交的信息不能为空不能为空' });
+        if (!name || !password || !email || !code) return ctx.error({ msg: '提交的信息不能为空不能为空' });
+        const saveCode = await Store.hget(`mail:${email}`, 'code')
+        if (!saveCode) return ctx.error({ msg: '验证码已过期' })
+        if (!(String(code) === String(saveCode))) return ctx.error({ msg: '验证码出差' })
         if (!userConfig.namePattern.test(name)) return ctx.error({ msg: '用户名必须大于4个字符小于16个字符' });
         if (!userConfig.passwordPattern.test(password)) return ctx.error({ msg: '密码必须分别包含2个大小写字母,并且大于6个字符小于16个字符' });
         if (!userConfig.emailPattern.test(email)) return ctx.error({ msg: '请输入正确的邮箱地址' });
