@@ -138,7 +138,7 @@ class ArticleController {
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
         const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).lean(true); // 通过 lean 将此转换为 js 的对象方便操作
-        let isPraise=0, isFavorite=0, isLogined=0, isStar=0
+        let isPraise=0, isFavorite=0, isLogined=0, isStar=0, isMe=0
         if (ctx.session.userId) {
             isLogined=1
             // 使用 for 循环 实现异步，如果这里如果使用 同步代码在第二次查询的时候会特别的慢
@@ -152,8 +152,9 @@ class ArticleController {
             isFavorite = favorite ? 1 : 0
             const star = await starModel.findOne({ authorId: ctx.session.userId, starUserId: article.authorId._id })
             isStar = star ? 1 : 0
+            isMe = String(ctx.session.userId) === String(article.authorId._id) ? 1 : 0
         }
-        return ctx.success({ data: { article: article, comments, status: {isPraise, isFavorite, isLogined, isStar} } });
+        return ctx.success({ data: { article: article, comments, status: {isPraise, isFavorite, isLogined, isStar, isMe} } });
     }
 
     static async praise(ctx) {
