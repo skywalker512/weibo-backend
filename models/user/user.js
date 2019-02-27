@@ -12,6 +12,7 @@ const UserSchema = new Schema({
   starMeNum: { type: Number, default: 0 }, // 粉丝数
   starOtherNum:{ type: Number, default: 0 }, // 关注的用户数
   lastPublishAt: { type: Date, default: Date.now },  // 用户最后发帖
+  phone: { type: String, default: '' },
 },{ timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }});
 
 export default mongoose.model('User', UserSchema);

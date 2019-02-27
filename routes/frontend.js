@@ -5,7 +5,7 @@ import { ArticleController, UserController, CommentController, IndexController, 
 const router = new Router({ prefix: '/api' });
 
 router
-    .get('/', async (ctx) => {
+    .get('/', async(ctx) => {
         ctx.body = {
             '当前用户': '/api/user',
             '获取分类列表': '/category{/_id}'
@@ -19,7 +19,7 @@ router
     // post backend
     .get('/category/:_id', ArticleController.getCategoryArticle) // 特定的分类下的文章列表列表
     // put delete backend
-    
+
     .get('/article', ArticleController.getArticle) // 获取文章列表
     .post('/article', ArticleController.publishArticle) // 发布文章
     .get('/article/:_id', ArticleController.getArticleDetail) // 获取某个文章的详细信息
@@ -41,6 +41,9 @@ router
     .get('/user/:_id/star', UserController.starUser)
     .patch('/user/:_id', UserController.patchUser)
     .post('/user/verifyemail', UserController.verifyEmail)
+    .post('/user/verifyphone', UserController.verifyPhone)
+    .post('/loginbyphone', UserController.login)
+    .post('/registerbyphone', UserController.register)
 
 
     // geetest
