@@ -42,8 +42,8 @@ router
     .patch('/user/:_id', UserController.patchUser)
     .post('/user/verifyemail', UserController.verifyEmail)
     .post('/user/verifyphone', UserController.verifyPhone)
-    .post('/loginbyphone', UserController.login)
-    .post('/registerbyphone', UserController.register)
+    .post('/loginbyphone', UserController.loginByPhone)
+    .post('/registerbyphone', UserController.registerByPhone)
 
 
     // geetest

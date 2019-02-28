@@ -50,9 +50,10 @@ class UserController {
         const saveCode = await Store.hget(`phone:${phone}`, 'code')
         if (!saveCode) return ctx.error({ msg: '验证码已过期' })
         if (!(String(code) === String(saveCode))) return ctx.error({ msg: '验证码出错' })
-        const result = UserModel.findOne({ phone }, { password: 0 });
+        const result = await UserModel.findOne({ phone }, { password: 0 });
 
         if (!result) return ctx.error({ msg: '登陆信息错误' });
+
         // 种下 Cookies
         ctx.setCookies(result._id, result.group);
         if (Number(isKeep) === 0) ctx.session.maxAge = 0;
