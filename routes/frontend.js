@@ -12,6 +12,7 @@ router
         }
     })
     .get('/index', IndexController.getIndex)
+    .get('/index/refresh', IndexController.refreshIndex)
 
     // 不包含 _id 的有 get(列表) post(新的)
     // 包含的有 get(详情) put(修改) delete(删除)

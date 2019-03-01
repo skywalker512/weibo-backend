@@ -7,6 +7,9 @@ import PraiseModel from '../../models/article/praise'
 import ImageModel from '../../models/article/image'
 import VideoModel from '../../models/article/video'
 import starModel from '../../models/user/star'
+import Redis from 'koa-redis'
+
+const Store = new Redis({ url: process.env.REDIS }).client
 
 // 这里使用 类的静态方法来创建，在内存上的使用应该和使用对象或者实例化是相同的只是写起来明了一些
 class ArticleController {
@@ -38,6 +41,7 @@ class ArticleController {
         const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
         result.authorId = user
         if (!result) return ctx.error({ msg: '文章创建失败' });
+        await Store.hdel(`index-cache`, 'res')
         return ctx.success({ msg: '发表成功', data: result });
     }
 
