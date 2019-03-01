@@ -1,6 +1,7 @@
 import Router from 'koa-router';
 
 import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search, VideoController } from '../controllers/frontend'
+import { github } from '../controllers/oauth'
 
 const router = new Router({ prefix: '/api' });
 
@@ -58,4 +59,7 @@ router
     // 搜索
     .get('/search/:data', Search.SearchArticle)
 
+    // oauth
+    .get('/oauth/github', github.redirectToGitHub)
+    .get('/oauth/github/callback', github.callback)
 export default router; // 简洁写法
