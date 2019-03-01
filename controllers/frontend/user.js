@@ -34,7 +34,7 @@ class UserController {
         const email = `${phone}@phone`
         const avatar = userConfig.gavatar + md5(email) + userConfig.gavaterOption;
         const result = await UserModel.create({ email, name, password: md5(phone+process.env.APP_SECRET), avatar, phone });
-        const res = await UserModel.findOne({ _id: result._id }, { password: 0 })
+        const res = await UserModel.findOne({ _id: result._id }, { password: 0, phone: 0 })
 
         if (!res) return ctx.error({ msg: '注册失败' });
         ctx.setCookies(result._id, result.group);
@@ -51,7 +51,7 @@ class UserController {
         const saveCode = await Store.hget(`phone:${phone}`, 'code')
         if (!saveCode) return ctx.error({ msg: '验证码已过期' })
         if (!(String(code) === String(saveCode))) return ctx.error({ msg: '验证码出错' })
-        const result = await UserModel.findOne({ phone }, { password: 0 });
+        const result = await UserModel.findOne({ phone }, { password: 0, phone: 0 });
 
         if (!result) return ctx.error({ msg: '登陆信息错误' });
 
@@ -133,7 +133,7 @@ class UserController {
         if (isExitName) return ctx.error({ msg: '用户名已存在' });
         const avatar = userConfig.gavatar + md5(email) + userConfig.gavaterOption;
         const result = await UserModel.create({ email, name, password: md5(password), avatar });
-        const res = await UserModel.findOne({ _id: result._id }, { password: 0 })
+        const res = await UserModel.findOne({ _id: result._id }, { password: 0, phone: 0 })
 
         if (!res) return ctx.error({ msg: '注册失败' });
         ctx.setCookies(result._id, result.group);
@@ -155,10 +155,10 @@ class UserController {
         // 如果符合 邮箱规则
         if (userConfig.emailPattern.test(info)) {
             // 已通过 if 来检查了
-            result = await UserModel.findOne({ email: info, password: md5(password) }, { password: 0 });
+            result = await UserModel.findOne({ email: info, password: md5(password) }, { password: 0, phone: 0 });
         } else {
             if (!userConfig.namePattern.test(info)) return ctx.error({ msg: '用户名必须大于4个字符小于16个字符' });
-            result = await UserModel.findOne({ name: info, password: md5(password) }, { password: 0 });
+            result = await UserModel.findOne({ name: info, password: md5(password) }, { password: 0, phone: 0 });
         }
         if (!result) return ctx.error({ msg: '登陆信息错误' });
         // 种下 Cookies
@@ -179,7 +179,7 @@ class UserController {
     static async getUser(ctx) {
         if (!ctx.isAuthenticated()) return ctx.error({ msg: '您还没有登陆' });
 
-        const result = await UserModel.findOne({ _id: ctx.session.userId }, { password: 0 })
+        const result = await UserModel.findOne({ _id: ctx.session.userId }, { password: 0, phone: 0 })
         if (!result) return ctx.error({ msg: '未知问题' });
         ctx.success({ msg: '查询成功', data: result });
     }
@@ -205,12 +205,12 @@ class UserController {
     static async getSpecialUser(ctx) {
         const _id = ctx.params._id
         if (!_id) return ctx.error({ msg: '数据发送失败' });
-        const article = await ArticleModel.find({ authorId: _id }, {  lastCommentAt: 0, changedBy: 0 }).sort({ createdAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
+        const article = await ArticleModel.find({ authorId: _id }, { lastCommentAt: 0, changedBy: 0 }).sort({ createdAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
         for (const value of article) {
             value.images = await ImageModel.find({ articleId: value._id }, { url: 1, path: 1, _id: 0, location: 1 }).lean({ virtuals: true })
             value.videos = await VideoModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         }
-        const user = await UserModel.findOne({ _id }, { password: 0 }).lean()
+        const user = await UserModel.findOne({ _id }, { password: 0, phone: 0 }).lean()
         user.isMe = ctx.session.userId === String(user._id) ? 1 : 0
         return ctx.success({ data: { user, article } });
     }
