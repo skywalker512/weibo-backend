@@ -18,7 +18,11 @@ class IndexController {
         }
         const category = await CategoryModel.find(null, { name: 1 });
         const link = await LinkModel.find();
-        const res = {  article, category, link }
+        const hot = await ArticleModel.find(null, {  lastCommentAt:0, changedBy: 0 , praise: 0 }).sort({ review: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        for(const value of hot) {
+            value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+        }
+        const res = {  article, category, link, hot }
         await Store.hmset(`index-cache`, 'res', JSON.stringify(res))
         await Store.pexpireat(`index-cache`, new Date().getTime() + 15 * 60 * 1000)
         return ctx.success({ data: res });
