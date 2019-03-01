@@ -9,6 +9,7 @@ import md5 from 'md5';
 import { user as userConfig } from '../../config/common'
 import mailConfig from '../../config/email'
 import sms from './sms'
+import VideoModel from '../../models/article/video'
 
 const Store = new Redis({ url: process.env.REDIS }).client
 
@@ -204,9 +205,10 @@ class UserController {
     static async getSpecialUser(ctx) {
         const _id = ctx.params._id
         if (!_id) return ctx.error({ msg: '数据发送失败' });
-        const article = await ArticleModel.find({ authorId: _id }, { createdAt: 0, lastCommentAt: 0, changedBy: 0 }).sort({ updatedAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
+        const article = await ArticleModel.find({ authorId: _id }, { createdAt: 0, lastCommentAt: 0, changedBy: 0 }).sort({ createdAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
         for (const value of article) {
             value.images = await ImageModel.find({ articleId: value._id }, { url: 1, path: 1, _id: 0, location: 1 }).lean({ virtuals: true })
+            value.videos = await VideoModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         }
         const user = await UserModel.findOne({ _id }, { password: 0 }).lean()
         user.isMe = ctx.session.userId === String(user._id) ? 1 : 0
@@ -222,6 +224,7 @@ class UserController {
             const user = await UserModel.findOne({ _id: value.articleId.authorId }, { name: 1, avatar: 1 })
             value.articleId.authorId = user
             value.articleId.images = await ImageModel.find({ articleId: value.articleId._id }, { url: 1, path: 1, _id: 0, location: 1 }).lean({ virtuals: true })
+            value.articleId.videos = await VideoModel.find({ articleId: value.articleId._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
             article.push(value.articleId)
         }
         return ctx.success({ data: article });

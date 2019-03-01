@@ -5,6 +5,7 @@ import UserModel from '../../models/user/user'
 import FavoriteModel from '../../models/article/favorite'
 import PraiseModel from '../../models/article/praise'
 import ImageModel from '../../models/article/image'
+import VideoModel from '../../models/article/video'
 import starModel from '../../models/user/star'
 
 // 这里使用 类的静态方法来创建，在内存上的使用应该和使用对象或者实例化是相同的只是写起来明了一些
@@ -17,6 +18,8 @@ class ArticleController {
         if (!(Object.keys(data).length > 1)) return ctx.error({ msg: '数据发送失败' });
         const images = data.images.split(",");
         delete data.images
+        const videos = data.videos.split(",");
+        delete data.videos
 
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         data.authorId = ctx.session.userId;
@@ -31,6 +34,7 @@ class ArticleController {
                 await ImageModel.findOneAndUpdate({ _id: value }, { $set: { articleId: result._id  } })
             }
         }
+        if(videos[0] !== '') await VideoModel.findOneAndUpdate({ _id: videos[0] }, { $set: { articleId: result._id  } })
         const user = await UserModel.findOne({_id: data.authorId}, { name: 1, avatar: 1 })
         result.authorId = user
         if (!result) return ctx.error({ msg: '文章创建失败' });
@@ -81,9 +85,10 @@ class ArticleController {
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
 
-        const articles = await ArticleModel.find().sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        const articles = await ArticleModel.find().sort({ createdAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
         for(const value of articles) {
             value.images = await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+            value.videos = await VideoModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         }
         
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
@@ -107,9 +112,10 @@ class ArticleController {
         if (!page) page = 1;
         if (!per_page) per_page = 10;
         const skip = (page - 1) * per_page; // 第一页 从 0 开始
-        const articles = await ArticleModel.find({ categoryId: _id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
+        const articles = await ArticleModel.find({ categoryId: _id }).sort({ createdAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
         for(const value of articles) {
             value.images =  await ImageModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+            value.videos = await VideoModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         }
         if (!articles) return ctx.error({ msg: '获取详情数据失败!' });
 
@@ -125,6 +131,7 @@ class ArticleController {
         // author: { type: Schema.Types.ObjectId, ref: 'User' },
         const article = await ArticleModel.findOne({_id}).populate('authorId', { name: 1, avatar: 1 }).populate('categoryId', { name: 1 }).lean();
         article.images = await ImageModel.find({ articleId: article._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
+        article.videos = await VideoModel.find({ articleId: article._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
         if (!article) return ctx.error({ msg: '获取详情数据失败!' });
 
         const review = article.review + 1;
@@ -137,7 +144,7 @@ class ArticleController {
 
         // article_id: { type: Schema.Types.ObjectId, require: true },
         // createdAt: { type: Date, default: Date.now },
-        const comments = await CommentModel.find({ articleId: article._id }).sort({ updatedAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).lean(true); // 通过 lean 将此转换为 js 的对象方便操作
+        const comments = await CommentModel.find({ articleId: article._id }).sort({ createdAt: '-1' }).skip(skip).limit(Number(per_page)).populate('authorId', { name: 1, avatar: 1 }).lean(true); // 通过 lean 将此转换为 js 的对象方便操作
         let isPraise=0, isFavorite=0, isLogined=0, isStar=0, isMe=0
         if (ctx.session.userId) {
             isLogined=1

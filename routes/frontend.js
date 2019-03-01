@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search } from '../controllers/frontend'
+import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search, VideoController } from '../controllers/frontend'
 
 const router = new Router({ prefix: '/api' });
 
@@ -30,6 +30,7 @@ router
     .post('/comment', CommentController.publishComment)
     .post('/comment/:_id/praise', CommentController.praise)
     .post('/image', ImageController.createImage)
+    .post('/video', VideoController.createVideo)
 
     // 用户相关
     .post('/login', UserController.login)

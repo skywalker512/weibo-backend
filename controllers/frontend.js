@@ -6,5 +6,6 @@ import ImageController from './frontend/image'
 import Geetest from './frontend/geetest'
 import Upyun from './frontend/upyun'
 import Search from './frontend/search'
+import VideoController from './frontend/video'
 
-export { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search };
+export { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search, VideoController };
