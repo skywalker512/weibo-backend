@@ -205,7 +205,7 @@ class UserController {
     static async getSpecialUser(ctx) {
         const _id = ctx.params._id
         if (!_id) return ctx.error({ msg: '数据发送失败' });
-        const article = await ArticleModel.find({ authorId: _id }, { createdAt: 0, lastCommentAt: 0, changedBy: 0 }).sort({ createdAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
+        const article = await ArticleModel.find({ authorId: _id }, {  lastCommentAt: 0, changedBy: 0 }).sort({ createdAt: '-1' }).limit(10).populate('authorId', { name: 1, avatar: 1 }).lean();
         for (const value of article) {
             value.images = await ImageModel.find({ articleId: value._id }, { url: 1, path: 1, _id: 0, location: 1 }).lean({ virtuals: true })
             value.videos = await VideoModel.find({ articleId: value._id },{ url: 1, path:1 , _id:0, location: 1}).lean({ virtuals: true })
@@ -218,7 +218,7 @@ class UserController {
     static async getSpecialUserFavorite(ctx) {
         const _id = ctx.params._id
         if (!_id) return ctx.error({ msg: '数据发送失败' });
-        const favorite = await FavoriteModel.find({ authorId: _id }, { articleId: 1 }).populate('articleId', { createdAt: 0, lastCommentAt: 0, changedBy: 0 }).lean()
+        const favorite = await FavoriteModel.find({ authorId: _id }, { articleId: 1 }).populate('articleId', {  lastCommentAt: 0, changedBy: 0 }).lean()
         const article = []
         for (const value of favorite) {
             const user = await UserModel.findOne({ _id: value.articleId.authorId }, { name: 1, avatar: 1 })
