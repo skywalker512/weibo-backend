@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 
 import { ArticleController, UserController, CommentController, IndexController, ImageController, Geetest, Upyun, Search, VideoController } from '../controllers/frontend'
-import { github } from '../controllers/oauth'
+import { github, weibo } from '../controllers/oauth'
 
 const router = new Router({ prefix: '/api' });
 
@@ -62,4 +62,6 @@ router
     // oauth
     .get('/oauth/github', github.redirectToGitHub)
     .get('/oauth/github/callback', github.callback)
+    .get('/oauth/weibo', weibo.redirectToWeibo)
+    .get('/oauth/weibo/callback', weibo.callback)
 export default router; // 简洁写法
