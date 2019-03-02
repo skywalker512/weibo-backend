@@ -29,7 +29,7 @@ export default class {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(params)
+            body: JSON.parse(params)
         }).then(res => { return res.text() })
 
         const args = body.split('&')

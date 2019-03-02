@@ -4,7 +4,7 @@ import 'dotenv/config'
 import Koa from 'koa';
 // import views from 'koa-views';
 import json from 'koa-json'; // 用于 美化 json
-import onerror from 'koa-onerror'; // 用于在 访问出错时 返回 html 页面
+// import onerror from 'koa-onerror'; // 用于在 访问出错时 返回 html 页面
 import bodyparser from 'koa-bodyparser'; // koa-bodyparser中间件可以把koa2上下文的formData数据解析到ctx.request.body
 import logger from 'koa-logger'; // 用于在 控制台 显示相应
 import session from 'koa-session';
@@ -17,13 +17,14 @@ import { indexRouter, frontendRouter, backendRouter } from './routes/index';
 import response from './middlewares/response';
 import passport from './middlewares/passport';
 import cors from './middlewares/cors';
+import errorMid from './middlewares/error'
 
 // 连接数据库
 import './models/db';
 
 const app = new Koa();
 // error handler
-if (String(process.env.APP_DEBUG)==='true') onerror(app);
+// if (String(process.env.APP_DEBUG)==='true') onerror(app);
 
 // middlewares
 app.use(bodyparser({
@@ -60,6 +61,7 @@ app.use(async (ctx, next) => {
 app.use(cors)
 app.use(response); // 这里如果使用 () 则需要 response 函数返回一个函数，use 接收的就是一个函数
 app.use(passport);
+app.use(errorMid)
 app.use(indexRouter.routes());
 app.use(indexRouter.allowedMethods());
 app.use(frontendRouter.routes());
