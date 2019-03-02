@@ -160,7 +160,7 @@ class UserController {
             if (!userConfig.namePattern.test(info)) return ctx.error({ msg: '用户名必须大于4个字符小于16个字符' });
             result = await UserModel.findOne({ name: info, password: md5(password) }, { password: 0, phone: 0 });
         }
-        if (!result) return ctx.error({ msg: '登陆信息错误' });
+        if (!result) return ctx.error({ msg: '用户名或者密码出错' });
         // 种下 Cookies
         ctx.setCookies(result._id, result.group);
         if (Number(isKeep) === 0) ctx.session.maxAge = 0;
