@@ -7,7 +7,7 @@ import md5 from 'md5'
 
 export default class {
     static redirectToWeibo(ctx) {
-        // if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
+        if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
         //重定向到认证接口,并配置参数
         const path = `https://api.weibo.com/oauth2/authorize?client_id=${weiboConfig.ak}&redirect_uri=${process.env.APP_DOMAIN}/api/oauth/weibo/callback`
         //转发到授权服务器

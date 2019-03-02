@@ -7,7 +7,7 @@ import md5 from 'md5'
 
 export default class {
     static redirectToGitHub(ctx) {
-        // if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
+        if (ctx.isAuthenticated()) return ctx.error({ msg: '您已经登陆了' });
         //重定向到认证接口,并配置参数
         const path = `https://github.com/login/oauth/authorize?client_id=${githubConfig.client_id}&scope=${githubConfig.scope}`
         //转发到授权服务器
@@ -29,7 +29,7 @@ export default class {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.parse(params)
+            body: JSON.stringify(params)
         }).then(res => { return res.text() })
 
         const args = body.split('&')
