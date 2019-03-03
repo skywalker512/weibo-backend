@@ -1,17 +1,29 @@
-https-portal:
-  image: index.docker.io/steveltn/https-portal:1
+traefik:
+  image: index.docker.io/library/traefik:1.7-alpine
+  labels:
+  - traefik.enable=false
+  command: --docker
   ports:
   - 80:80
   - 443:443
-  links:
-  - node
-  environment:
-    DOMAINS: api.redrock.atowerlight.cn -> http://node:3000
-    STAGE: production
   volumes:
-  - /home/docker/https-portal:/var/lib/https-portal
+  - /var/run/docker.sock:/var/run/docker.sock
+  - /home/docker/traefik/traefik.toml:/traefik.toml
+  - /home/docker/traefik/acme.json:/acme.json
+  environment:
+  - DNSPOD_API_KEY=xxx,xxx
 node:
-  image: daocloud.io/houzhenhong/redrock:latest
+  image: daocloud.io/houzhenhong/redrock:nodejs-88fa714
+  labels:
+  - traefik.frontend.rule=Host:api.redrock.atowerlight.cn
+  - traefik.frontend.rateLimit.extractorFunc=client.ip
+  - traefik.frontend.rateLimit.rateSet.r1.period=3s
+  - traefik.frontend.rateLimit.rateSet.r1.average=5
+  - traefik.frontend.rateLimit.rateSet.r1.burst=15
+  - traefik.frontend.rateLimit.rateSet.r2.period=10s
+  - traefik.frontend.rateLimit.rateSet.r2.average=50
+  - traefik.frontend.rateLimit.rateSet.r2.burst=100
+  - traefik.frontend.headers.browserXSSFilter=true
   links:
   - redis
   - mongo
@@ -22,20 +34,77 @@ node:
   - GEETEST_ID=xxx
   - GEETEST_KEY=xxx
   - MONGO=mongodb://mongo:27017/weibotest
-  - UPYUN_BUCKET=redrock
+  - UPYUN_BUCKET=xxx
   - REDIS=redis://redis:6379/1
-  - UPYUN_URL=https://upyun.redrock.atowerlight.cn
-  - UPYUN_PASSWORD=xxxx
-  - UPYUN_OPERATOR=xxxx
-  - FE_URL=https://redrock.atowerlight.cn
+  - UPYUN_URL=https://upyun.xxx
+  - UPYUN_PASSWORD=xxx
+  - UPYUN_OPERATOR=xxx
+  - FE_URL=https://xxx
+  - APP_NAME=Weibo # 会显示在 title 部分
+  - SMTP_HOST=xxx
+  - SMTP_PORT=465
+  - SMTP_USER=xxx
+  - SMTP_PASS=xxx
+  - SMTP_FROM=Weibo Emailer 
+  - APP_DEBUG=true # 开启后api会返回 tract 信息
+  - SMS_APPID=xxx  # 使用的是 腾讯云的短信发送
+  - SMS_APPKEY=xxx
+  - SMS_TEMPLATEID=xxx
+  - SMS_SIGN=xxx
+  - APP_SECRET=xx # 用于第三方登录的生成密码
+  - GITHUB_CLIENT_ID=xx
+  - GITHUB_CLIENT_SECRET=xxx
+  - WEIBO_AK=xx
+  - WEIBO_SK=xxx
+  - APP_DOMAIN=https://api.xxx
 redis:
   image: daocloud.io/library/redis:3.2.9-alpine
+  labels:
+  - traefik.enable=false
   volumes:
   - /home/docker/redis:/data
   restart: always
 mongo:
   image: mvertes/alpine-mongo:4.0.5-0
+  labels:
+  - traefik.enable=false
   volumes:
   - /home/docker/mongo/db:/data/db
   - /home/docker/mongo/configdb:/data/configdb
   restart: always
+prerender:
+  image: daocloud.io/houzhenhong/seo-prerender:latest
+  labels:
+  - traefik.frontend.rule=Host:redrock.atowerlight.cn
+  - traefik.frontend.rateLimit.extractorFunc=client.ip
+  - traefik.frontend.rateLimit.rateSet.r1.period=3s
+  - traefik.frontend.rateLimit.rateSet.r1.average=5
+  - traefik.frontend.rateLimit.rateSet.r1.burst=15
+  - traefik.frontend.rateLimit.rateSet.r2.period=10s
+  - traefik.frontend.rateLimit.rateSet.r2.average=50
+  - traefik.frontend.rateLimit.rateSet.r2.burst=100
+  - traefik.frontend.headers.browserXSSFilter=true
+  links:
+  - redis
+  environment:
+  - HOST_URL=redrock.atowerlight.cn
+  - HOST_PROTOCOL=https
+  - TOKEN=xxx
+  - REDIS=redis://redis:6379/2
+  restart: always
+adminmongo:
+  image: mrvautin/adminmongo:latest
+  labels:
+  - traefik.frontend.rule=Host:mongo.redrock.atowerlight.cn
+  - traefik.frontend.headers.browserXSSFilter=true
+  links:
+  - mongo
+  restart: always
+  environment:
+  - CONN_NAME=1
+  - DB_HOST=mongo
+  - CONN_NAME=weibotest
+  expose:
+  - 1234
+  volumes:
+  - /home/docker/mongoadmin/app.json:/app/user/config/app.json
