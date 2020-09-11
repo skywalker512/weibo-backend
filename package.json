@@ -28,7 +28,7 @@
     "md5": "^2.2.1",
     "mongoose": "^5.4.10",
     "mongoose-lean-virtuals": "^0.3.4",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "nodemailer": "^5.1.1",
     "tracer": "^0.9.8",
     "upyun": "^3.3.5"
